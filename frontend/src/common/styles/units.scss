@@ -1,0 +1,246 @@
+/**
+ * 网站可复用的基础元件的css,如按钮
+ */
+
+
+// -------------------Input---------------------
+$textIptColor: #666;
+$textIptBorderColor: rgb(221, 221, 221);
+$textPlaceholderColor: rgb(204, 204, 204);
+$textPlaceholderColor_dark: rgba(255, 255, 255, .1);
+
+%ipt-placeholder {
+  &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: $textPlaceholderColor;
+    opacity: 1; /* Firefox */
+  }
+  &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: $textPlaceholderColor;
+  }
+  &::-ms-input-placeholder { /* Microsoft Edge */
+    color: $textPlaceholderColor;
+  }
+  .theme-dark &:-ms-input-placeholder {
+    color: $textPlaceholderColor_dark;
+  }
+  .theme-dark & {
+    &::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+      color: $textPlaceholderColor_dark;
+      opacity: 1; /* Firefox */
+    }
+
+    &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+      color: $textPlaceholderColor_dark;
+    }
+
+    &::-ms-input-placeholder { /* Microsoft Edge */
+      color: $textPlaceholderColor_dark;
+    }
+  }
+}
+
+%ie-ipt-icon-clear {
+  /* IE10+ 文本输入框清除文本图标 */
+  &::-ms-clear {
+    display: none;
+  }
+  /* IE10+ 文本输入框显示密码图标 */
+  &::-ms-reveal {
+    display: none;
+  }
+}
+
+.u-ipt-text1 {
+  @extend %ipt-placeholder;
+  @extend %ie-ipt-icon-clear;
+
+  border: 1px solid $textIptBorderColor;
+  border-radius: 3px;
+  background-color: white;
+  color: $textIptColor;
+  outline: none;
+  &:focus {
+    border-color: $textPlaceholderColor;
+  }
+  .theme-dark & {
+    background-color: #181818;
+    border-color: #181818;
+    color: #b1b1b1;
+    &:focus {
+      border-color: rgba(11, 99, 170, .3);
+    }
+  }
+}
+
+.u-ipt-text2 {
+  $borderRadius: 3px;
+  $height: 40px;
+  height: $height;
+  font-size: 0;
+  overflow: hidden;
+  input {
+    @extend %ipt-placeholder;
+    @extend %ie-ipt-icon-clear;
+    display: inline-block;
+    width: calc(100% - 40px);
+    height: 100%;
+    padding: 0 10px;
+    font-size: 1.6rem;
+    border-width:  1px 0 1px 1px;
+    border-style: solid;
+    border-color: #ddd;
+    border-radius: $borderRadius 0 0 $borderRadius;
+    outline: none;
+    &:focus {
+      border-color: #ccc;
+    }
+  }
+  button {
+    @extend %btn;
+    display: inline-block;
+    width: $height;
+    height: $height;
+    border: 0;
+    border-radius: 0 $borderRadius $borderRadius 0;
+    text-align: center;
+    vertical-align: top;
+    font-size: 2rem;
+    background-color: rgba(33, 150, 243, 1);
+    color: #fff;
+    cursor: pointer;
+    .icon {
+      line-height: $height;
+    }
+    &:hover {
+      box-shadow: 0 0 0 62.5rem rgba(0,0,0,.075) inset;
+    }
+  }
+  .theme-dark & {
+    input {
+      background-color: #181818;
+      border-color: #181818;
+      color: #b1b1b1;
+      &:focus {
+        border-color: rgba(11, 99, 170, .3);
+      }
+    }
+    button {
+      background-color: #0b63aa;
+    }
+  }
+}
+
+%btn {
+  &:hover:enabled {
+    box-shadow: 0 0 0 100rem rgba(0, 0, 0, .1) inset;
+  }
+}
+
+.u-btn1{
+  position: relative;
+  font-size: 1.4rem;
+  border-radius: 3px;
+  text-align: center;
+  overflow: hidden;
+  >button{
+    @extend %btn;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(66, 165, 245);
+    color: white;
+    &:disabled {
+      background-color: #b4b4b4;
+      color: #ddd;
+      cursor: initial;
+    }
+  }
+  .loading{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    color: #aaa;
+    .icon{
+      display: inline-block;
+      animation: rotate 1s linear infinite;
+    }
+    @keyframes rotate {
+      from { transform: rotate(0); }
+      to { transform: rotate(360deg); }
+    }
+  }
+  .theme-dark & {
+    >button {
+      background-color: #0b63aa;
+      &:disabled {
+        background-color: #4e4e4e;
+        color: #ccc;
+        cursor: initial;
+      }
+    }
+  }
+}
+
+.u-btn2 {
+  @extend %btn;
+  font-size: 1.6rem;
+  background-color: transparent;
+  color: #fff;
+}
+
+.u-btn3 {
+  @extend %btn;
+  width: 100%;
+  height: 100%;
+  border-radius: 3px;
+  background-color: rgb(66, 165, 245);
+  color: white;
+  .theme-dark & {
+    background-color: #0b63aa;
+  }
+}
+// -------------------Tag---------------------
+
+%tag1 {
+  $height: 30px;
+  display: inline-block;
+  height: $height;
+  padding: 0 12px;
+  font-size: 1.3rem;
+  line-height: $height;
+  border-radius: 2px;
+  border: 1px solid rgba(90, 118, 132, .9);
+  cursor: pointer;
+  .count {
+    margin-left: 6px;
+  }
+  .btn-delete {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 1.2rem;
+    transform: scale(.6);
+    &:hover {
+      font-weight: bold;
+    }
+  }
+}
+.u-tag1 {
+  @extend %tag1;
+  padding: 0 12px;
+  color: rgba(90, 118, 132, .9);
+  &:hover {
+    background-color: rgba(90, 118, 132, .05);
+  }
+}
+.u-tag1__disabled {
+  @extend %tag1;
+  color: rgba(90, 118, 132, .9);
+  opacity: 0.5;
+  cursor: default;
+}
+.u-tag1__checked {
+  @extend %tag1;
+  background-color: rgba(90, 118, 132, .9);
+  color: #fff;
+}

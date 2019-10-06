@@ -1,0 +1,55 @@
+/**
+ * 各种css功能性处理class
+ */
+
+
+.f-scrollbar-decor {
+  // chrome
+  &::-webkit-scrollbar {
+    width: 0px;
+    height:8px;
+    background-color: rgba(0, 0, 0, .05);
+  }
+  &::-webkit-scrollbar-track {
+    width: 0px;
+    height:8px;
+    background-color: rgba(0, 0, 0, .05);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, .15);
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-corner{
+    background-color: rgba(0, 0, 0, .05);
+  }
+  // ie
+  scrollbar-track-color: #e6e6e6;
+  scrollbar-arrow-color: #c4c4c4;
+  scrollbar-shadow-color: #c4c4c4;
+  scrollbar-face-color: #c4c4c4;
+  // firefox
+  scrollbar-color: #c4c4c4 #e6e6e6;
+  scrollbar-width: thin;
+  .theme-dark & {
+    // chrome
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .15);
+    }
+    // ie
+    scrollbar-track-color: #1b1b1b;
+    scrollbar-arrow-color: #3d3d3d;
+    scrollbar-shadow-color: #3d3d3d;
+    scrollbar-face-color: #3d3d3d;
+    // firefox
+    scrollbar-color: #3d3d3d #1b1b1b;
+    scrollbar-width: thin;
+  }
+}
+
+.f-cb:after {
+  display: block;
+  clear: both;
+  content: '';
+  visibility: hidden;
+  height: 0;
+}

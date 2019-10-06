@@ -1,0 +1,316 @@
+/**
+ * 网站可复用的模块的css
+ */
+
+.m-btnbar {
+  $borderStyle: 1px solid rgb(226, 226, 230);
+  overflow: hidden;
+  .btn-list {
+    $height: 30px;
+    display: inline-block;
+    float: right;
+    height: $height;
+    font-size: 0;
+    border: $borderStyle;
+    border-radius: 3px;
+    %btn {
+      display: inline-block;
+      padding: 0 10px;
+      font-size: 1.4rem;
+      line-height: $height;
+      cursor: pointer;
+      &:not(:last-child) {
+        border-right: $borderStyle;
+      }
+    }
+    .btn {
+      @extend %btn;
+    }
+    .btn__disabled {
+      @extend %btn;
+      cursor: default;
+      color: #999;
+    }
+    .btn__selected {
+      @extend %btn;
+      background-color: #ccc;
+    }
+  }
+}
+
+.m-form-signcard {
+  $textItemHeight: 38px;
+  $textItemInterval: 15px;
+  $textIptColor: #666;
+  position: relative;
+  padding: 40px 20px 20px;
+  .text-item {
+    $iconWidth: 44px;
+    position: relative;
+    display: block;
+    font-size: 0;
+    >input{
+      display: block;
+      padding: 0 10px 0 $iconWidth;
+      width: 100%;
+      height: $textItemHeight;
+      &:focus + .icon {
+        color: #999;
+      }
+    }
+    .icon{
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 44px;
+      height: $textItemHeight;
+      line-height: $textItemHeight;
+      text-align: center;
+      color: rgb(221, 221, 221);
+    }
+    &:not(:first-child) {
+      margin-top: $textItemInterval;
+    }
+  }
+  .avatar-item {
+    display: block;
+    position: relative;
+    margin: 0 auto 25px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 0;
+    font-size: 0;
+    line-height: 0;
+    overflow: hidden;
+    >.icon{
+      display: inline-block;
+      margin-top: 2px;
+      width: 90px;
+      height: 90px;
+      font-size: 86px;
+      line-height: 89px;
+      color: rgb(204, 204, 204);
+    }
+    >.preview{
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+    }
+    >input{
+      display: none;
+    }
+  }
+  >.submit {
+    margin-top: $textItemInterval + 8px;
+    width: 100%;
+    height: 36px;
+    line-height: 36px;
+  }
+  .theme-dark & {
+    .text-item,
+    .avatar-item  {
+      .icon {
+        color: #444;
+      }
+    }
+  }
+}
+
+.m-form-setting {
+  $textItemHeight: 38px;
+  $itemInterval: 20px;
+  $lightHeight: $textItemHeight;
+  $titleWidth: 120px;
+  $textIptColor: #666;
+  $textIptBorderColor: rgb(221, 221, 221);
+  $textIptBorderColor_Focus: rgb(204, 204, 204);
+  padding-top: 35px;
+  .info-item,
+  .img-item,
+  .input-item,
+  .radio-item,
+  .textarea-item,
+  .other-item,
+  .submit {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 0 20px 0 $titleWidth;
+    font-size: 1.4rem;
+    font-weight: 100;
+    .title {
+      display: inline-block;
+      position: absolute;
+      left: 0;
+      width: $titleWidth;
+      height: $textItemHeight;
+      padding: 0 10px;
+      line-height: $textItemHeight;
+      font-size: 1.4rem;
+      font-weight: 500;
+      text-align: right;
+    }
+    &:not(:last-child) {
+      margin-bottom: $itemInterval;
+    }
+    &:last-child {
+      padding-bottom: $itemInterval;
+    }
+    @media screen and (max-width: 500px) {
+      padding: 0 20px;
+      .title{
+        display: block;
+        position: initial;
+        padding: 0;
+        font-weight: 500;
+        text-align: left;
+      }
+    }
+  }
+  .info-item {
+    line-height: $lightHeight;
+    font-size: 1.4rem;
+  }
+  .img-item {
+    .preview {
+      display: inline-block;
+      width: 120px;
+      height: 120px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 5px;
+      vertical-align: bottom;
+    }
+    .change{
+      display: inline-block;
+      margin-left: 5px;
+      padding: 0 5px;
+      font-size: 1.2rem;
+      line-height: 20px;
+      color: rgb(51, 51, 51);
+      cursor: pointer;
+      input {
+        display: none;
+      }
+      &:hover {
+        color: rgba(51, 51, 51, 0.75);
+      }
+    }
+  }
+  .input-item {
+    input{
+      height: $textItemHeight;
+      padding: 0 10px;
+      &:focus + .icon {
+        color: #999;
+      }
+    }
+    >input {
+      width: 100%;
+    }
+    .inputs-2 {
+      display: block;
+      position: relative;
+      color: textIptColor;
+      font-size: 0;
+      >input {
+        &:nth-child(1) {
+          width: calc((100% - 15px) / 2);
+        }
+        &:nth-child(2) {
+          margin-left: 15px;
+          width: calc((100% - 15px) / 2);
+        }
+      }
+      @media screen and (max-width: 500px) {
+        input:nth-child(1),
+        input:nth-child(2) {
+          display: block;
+          margin: 0;
+          width: 100%;
+        }
+        input:nth-child(2) {
+          margin-top: $itemInterval;
+        }
+      }
+      &:not(:first-of-type){
+        margin-top: $itemInterval;
+      }
+    }
+  }
+  .radio-item {
+    .radio-ctnr{
+      height: 100%;
+      line-height: $lightHeight;
+      font-size: 1.4rem;
+      .list-item {
+        position: relative;
+        padding-left: 25px;
+        .icon {
+          position: absolute;
+          left: 0;
+          top: 0;
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          padding: 3px;
+          border: 1px solid rgb(69, 90, 100);
+          border-radius: 50%;
+        }
+        .desc {
+          vertical-align: top;
+        }
+        > input {
+          display: none;
+        }
+        > input:checked + .icon::before {
+          display: block;
+          content: '';
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          background-color: rgb(69, 90, 100);
+        }
+        &:not(:first-child) {
+          margin-left: 20px;
+        }
+      }
+    }
+  }
+  .textarea-item{
+    >textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+      overflow: auto;
+    }
+  }
+  .crossline{
+    margin-bottom: $itemInterval;
+    height: 1px;
+    background-color: #f5f5f5;
+  }
+  .submit {
+    padding-top: 20px;
+    .btn {
+      width: 100%;
+      height: 36px;
+      line-height: 36px;
+    }
+  }
+  .theme-dark &{
+    .crossline {
+      background-color: rgba(255, 255, 255, .03);
+    }
+    .img-item {
+      .change {
+        color: $textIptColor;
+      }
+    }
+  }
+}
