@@ -221,10 +221,10 @@ export default {
      * 随着图片选择的改变而更新相应的信息
      */
     changeImage() {
-      this.file = this.$refs.imageFile.files[0];
+      this.image.file = this.$refs.imageFile.files[0];
       // 更新图片文件名
-      this.image.filename = this.file.name;
-      this.image.url = window.URL.createObjectURL(this.file);
+      this.image.filename = this.image.file.name;
+      this.image.url = window.URL.createObjectURL(this.image.file);
     },
     /**
      * 插入图片
@@ -261,9 +261,9 @@ export default {
     },
     /**
      * 插入资源
-     * @param  {string} type 类型
-     * @param  {Object} data 图片信息
-     * @param  {Object} fileData 图片文件信息
+     * @param  {string} type 类型(图片或者链接)
+     * @param  {Object} data 相关信息
+     * @param  {Object} fileData 图片文件
      * @return {[type]}
      */
     insert(type, data, fileData) {

@@ -303,8 +303,9 @@ function handleInlineInsert({ range, container, insertion }) {
       }
     });
   }
-
   startContainer.textContent = startContent + insertion + endContent;
+
+  if (!isTextNode(startContainer)) return ;
   // 调整选区
   range.setStart(startContainer, startOffset);
   range.setEnd(startContainer, endOffsetNow);
@@ -608,6 +609,10 @@ function generateTableMDText({ row, col }) {
 
 function covertToLineHTML(lines) {
   return lines.reduce((HTML, next) => {
-    return HTML + `<div>${next}</div>`;
+    return HTML + `<div>${next.trim() ? next : '<br>'}</div>`;
   }, '');
 };
+
+function isTextNode(node) {
+  return node.nodeType === 3;
+}

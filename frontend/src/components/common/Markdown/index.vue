@@ -34,7 +34,8 @@
               <div
                 v-for="(inlineText, index) in initialInlineTexts"
                 :key="index"
-              >{{ inlineText }}</div>
+                v-html="inlineText.trim() ? inlineText : '<br>'"
+              ></div>
             </div>
           </div>
         </div>
@@ -172,7 +173,7 @@ export default {
       let divLength = this.$refs.editContainer.querySelectorAll('div').length;
       // 如果输入区域没有行的话则插入一行
       if (divLength === 0) {
-        this.$refs.editContainer.innerHTML = '<div></div>';
+        this.$refs.editContainer.innerHTML = '<div><br></div>';
       }
 
       this.curContent = this.$refs.editContainer.innerText;
@@ -262,16 +263,19 @@ export default {
       // 图片去重
       this.images = this.images.reduce((images, next) => {
         let image = images.find(
-          image => image.name === next.name && image.size === next.size
+          image => image.name === next.name && image.url === next.url
         );
 
-        if (!image) images.push(next);
+        if (!image) {
+          images.push(next);
+        }
+
         return images;
       }, []);
 
       // 去除内容中没有引用的本地图片
       for (let i = this.images.length - 1; i >= 0; i--) {
-        if (!this.curContent.includes(this.images[i].link)) {
+        if (!this.curContent.includes(this.images[i].url)) {
           this.images.splice(i, 1);
         }
       }
@@ -311,9 +315,9 @@ export default {
 
       imageInfo.forEach(image => {
         // 找到与服务端图片信息相同图片名的图片文件
-        let file = this.images.find(file => file.name === image.name);
+        let file = this.images.find(file => file.name === image.filename);
         // 生成正则表达式字符串
-        let REString = file.link.replace(escapeRE, '\\$1');
+        let REString = file.url.replace(escapeRE, '\\$1');
         // 创建该图片链接的正则表达式
         let SRC_RE = new RegExp(REString, 'g');
         // 把内容中的本地图片地址替换成已经上传的服务端图片地址
@@ -356,7 +360,6 @@ export default {
      */
     getContent() {
       return this.uploadImagesAndReplace().then(res => {
-        console.log(this.curContent);
         return this.curContent;
       });
     }

@@ -30,7 +30,7 @@ router.post(
     // 生成返回的数据
     let data = req.locals.info.map(img => {
       return {
-        name: img.uploadname,
+        filename: img.uploadname,
         src: File.image.fillResourcePath(img.filename)
       };
     });
