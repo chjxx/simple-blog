@@ -89,6 +89,11 @@ export default {
           type: 'indent'
         },
         {
+          icon: 'iconparagraph',
+          title: '增加段落缩进',
+          type: 'paragraph-indent'
+        },
+        {
           icon: 'iconitalic',
           title: '斜体',
           type: 'italic'

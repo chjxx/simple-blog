@@ -89,16 +89,29 @@ task.watch('code-block', ({ range, container }) => {
  * @param  {Object} { range, container }
  */
 task.watch('indent', ({ range, container }) => {
-  let prefixRE = /\s{4}/;
   let prefix = generateString('&nbsp;', 4);
 
   handleLinePrefix({
     range,
     container,
-    prefix: prefixRE,
-    generatePrefix() {
-      return prefix;
-    },
+    prefix,
+    recover: false,
+    html: true
+  });
+});
+
+/**
+ * 处理增加段落缩进
+ * @param  {string} 'paragraph-indent'
+ * @param  {Object} { range, container }
+ */
+task.watch('paragraph-indent', ({ range, container }) => {
+  let prefix = generateString('　', 2);
+
+  handleLinePrefix({
+    range,
+    container,
+    prefix,
     recover: false,
     html: true
   });
