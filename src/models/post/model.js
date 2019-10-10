@@ -1,5 +1,5 @@
 const { Post } = require('../../lib/mongo');
-const File = require('../../lib/file');
+const f = require('../../lib/file');
 const { notType, getType, checkPropertyType } = require('../../lib/utils');
 const {
   ParamTypeError,
@@ -22,6 +22,10 @@ exports.create = doc => {
 
   if (paramError) {
     return Promise.reject(new ParamTypeError(paramError));
+  }
+
+  if (doc.content) {
+    doc.content = simplifyImageUrl(doc.content);
   }
 
   return Post.create(doc).catch(errorHandler);
@@ -256,10 +260,14 @@ exports.updateOne = (post, doc) => {
     return Promise.reject(new ParamTypeError(paramError));
   }
 
+  if (doc.content) {
+    doc.content = simplifyImageUrl(doc.content);
+  }
+
   return post.updateOne(doc, { runValidators: true }).then(
     result => {
       if (doc.cover && post.cover) {
-        File.image.deleteCover(post.cover);
+        f.image.deleteCover(post.cover);
       }
 
       return result;
@@ -331,9 +339,17 @@ exports.del = posts => {
 
   let postPromises = posts.map(post => {
     return post.remove().then(() => {
-      return post.cover && File.image.deleteCover(post.cover);
+      return post.cover && f.image.deleteCover(post.cover);
     });
   });
 
   return Promise.all(postPromises).catch(errorHandler);
 };
+
+function simplifyImageUrl(content) {
+  const imageRE = /!\[([\s\S]*)\]\(([\S]*)([\s\S]*)\)/g;
+
+  return content.replace(imageRE, matched => {
+    return f.image.simplifyResourcePath(matched);
+  });
+}

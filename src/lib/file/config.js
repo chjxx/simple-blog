@@ -1,34 +1,24 @@
 const path = require('path');
 
-const otherAssetConfig = {
-  uploadRoot: path.resolve('./assets'),
-  wwwAssetPath: path.resolve('./www'),
-  assetRoot: {
-    route: '/assets',
-    path: path.resolve('./assets')
-  }
-};
-
-// 上传文件存放目录（确定文件上传时存放的地方）
-const uploadPaths = {
-  image: {
-    avatar: path.resolve(otherAssetConfig.uploadRoot, './images/avatars'),
-    resource: path.resolve(otherAssetConfig.uploadRoot, './images/resources')
-  },
-  others: path.resolve(otherAssetConfig.uploadRoot, './others')
-};
-
-// 文件访问路径（客户端获取文件的路径地址，该路径地址加上文件名就是文件获取地址）
-const assetPaths = {
-  image: {
-    avatar: '/assets/images/avatars/',
-    resource: '/assets/images/resources/'
-  },
-  others: '/assets/others/'
-};
-
 module.exports = {
-  uploadPaths,
-  assetPaths,
-  otherAssetConfig
+  // 存储根路径（绝对路径）
+  uploadRootPath: path.resolve('./assets'),
+  // 各类型存储的相对路径
+  uploadPath: {
+    image: {
+      avatar: './images/avatars',
+      resource: './images/resources'
+    },
+    others: './others'
+  },
+  // 资源的公共路径（绝对路径）：在云服务器就用云服务器的地址
+  accessPublicPath: 'https://chjxx.github.io/simple-blog/assets',
+  // 各类型访问的相对路径
+  accessPath: {
+    image: {
+      avatar: '/images/avatars/',
+      resource: '/images/resources/'
+    },
+    others: '/others/'
+  }
 };

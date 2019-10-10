@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const File = require('../../lib/file');
+const f = require('../../lib/file');
 const { User } = require('../../lib/mongo');
 const { isType, getType, checkPropertyType } = require('../../lib/utils');
 const { ParamTypeError, ModelValidationError } = require('../../lib/ExtendError');
@@ -73,7 +73,7 @@ exports.treat = (result, reservedKeys) => {
       if (!reservedKeys.includes(key)) {
         delete user[key];
       } else if (key === 'avatar' && user[key]) {
-        user[key] = File.image.fillAvatarPath(user[key]);
+        user[key] = f.image.resolveAvatarPath(user[key]);
       }
     });
   });

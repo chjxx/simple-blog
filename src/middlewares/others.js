@@ -1,11 +1,11 @@
-const File = require('../lib/file');
+const f = require('../lib/file');
 
 // 预设request属性的中间件
 exports.presetProperty = (req, res, next) => {
   // 初始化request生命周期自定义变量
   req.locals = {};
   // 根据访问路径确定上传的文件存放的文件夹
-  for (let item of File.AccessPathParternMap) {
+  for (let item of f.accessPathMap) {
     if (item[0].test(req.path)) {
       req.locals.uploadDir = item[1];
 
@@ -30,7 +30,7 @@ exports.deleteRedundantFile = (err, req, res, next) => {
 
   if (fileKeys.length) {
     fileKeys.forEach(key => {
-      File.image.delete(req.files[key].path);
+      f.delete(req.files[key].path);
     });
   }
 

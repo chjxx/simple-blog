@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const { Image } = require('../../lib/mongo');
-const File = require('../../lib/file');
+const f = require('../../lib/file');
 const { isType, notType, getType, checkPropertyType } = require('../../lib/utils');
 const { ParamTypeError } = require('../../lib/ExtendError');
 const errorHandler = require('./errorHandler');
@@ -107,7 +107,7 @@ exports.del = images => {
   let imagePromises = images.map(img => {
     return img.remove()
       .then(() => {
-        return File.image.deleteResource(img.filename);
+        return f.image.deleteResource(img.filename);
       }, errorHandler);
   });
 

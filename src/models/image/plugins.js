@@ -1,5 +1,5 @@
 const Image = require('../../lib/mongo').Image;
-const File = require('../../lib/file');
+const f = require('../../lib/file');
 const { isType, getType, checkPropertyType } = require('../../lib/utils');
 const { ParamTypeError } = require('../../lib/ExtendError');
 /**
@@ -47,7 +47,7 @@ exports.treat = (result, reservedKeys) => {
       if (!reservedKeys.includes(key)) {
         delete img[key];
       } else if (key === 'filename' && img[key]) {
-        img[key] = File.image.fillResourcePath(img[key]);
+        img[key] = f.image.resolveResourcePath(img[key]);
       }
     });
   });

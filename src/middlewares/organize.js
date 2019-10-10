@@ -1,5 +1,5 @@
 const path = require('path');
-const File = require('../lib/file');
+const f = require('../lib/file');
 const { isType, notType, copyFields, parseJSONFields, checkPropertyType, sameArrayVal } = require('../lib/utils');
 const { ParamTypeError, MiddlewareError } = require('../lib/ExtendError');
 
@@ -106,7 +106,7 @@ exports.organizeImageCreateFields = (req, res, next) => {
 
   function deleteImages(files) {
     Object.keys(files).forEach(key => {
-      File.image.delete(files[key].path);
+      f.delete(files[key].path);
     });
   }
 };

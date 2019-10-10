@@ -171,14 +171,14 @@ export function notTypes(data, types) {
 
 /**
  * 对需要转为正则表达式的字符串预先做去歧义
- * @param  {string} sign 需要转为正则表达式的字符串
+ * @param  {string} string 需要转为正则表达式的字符串
  * @return {string}
  */
-export function escapeREString(sign) {
+export function escapeREString(string) {
   // 匹配在正则表达式中有特殊作用的符号，主要是用来消除以任何字符串生成的正则表达式中的歧义
   const escapeRE = /([\*\.\?\+\$\^\[\]\(\)\{\}\|\\\/])/g;
 
-  return sign.replace(escapeRE, '\\$1');
+  return string.replace(escapeRE, '\\$1');
 }
 /**
  * 截流函数, 限制函数在多少时间内最多执行一次

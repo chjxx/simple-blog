@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const { Post } = require('../../lib/mongo');
-const File = require('../../lib/file');
+const f = require('../../lib/file');
 const { isType, getType, checkPropertyType } = require('../../lib/utils');
 const { ParamTypeError, ModelResultError } = require('../../lib/ExtendError');
 
@@ -78,9 +78,15 @@ exports.treat = (result, reservedKeys) => {
       if (!reservedKeys.includes(key)) {
         delete post[key];
       } else if (key === 'cover' && post[key]) {
-        post[key] = File.image.fillCoverPath(post[key]);
+        post[key] = f.image.resolveCoverPath(post[key]);
       } else if (key === 'author' && post[key].avatar) {
-        post[key].avatar = File.image.fillAvatarPath(post[key].avatar);
+        post[key].avatar = f.image.resolveAvatarPath(post[key].avatar);
+      } else if (key === 'content' && post[key]) {
+        const imageRE = /!\[([\s\S]*)\]\(([\S]*)([\s\S]*)\)/g;
+
+        post[key] = post[key].replace(imageRE, (matched, p1, p2, p3) => {
+          return `![${p1}](${f.image.resolveResourcePath(p2)}${p3})`;
+        });
       }
     });
   });

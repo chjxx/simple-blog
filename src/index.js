@@ -14,7 +14,7 @@ const { expressLogger } = require('./lib/loggers');
 
 const routes = require('./routes');
 const pkg = require('../package');
-const { wwwAssetPath, assetRoot } = require('./lib/file');
+const f = require('./lib/file');
 
 const presetPropertyMiddleware = require('./middlewares/others').presetProperty;
 
@@ -23,12 +23,15 @@ const app = express();
 if (process.env.NODE_ENV === 'development') {
   webpack(app);
 } else {
+  let webpackConfig = require('../frontend/config/webpack.base.conf');
+
   app.use(compression());
   // 设置静态文件目录
-  app.use(express.static(wwwAssetPath, { maxAge: 31536000 }));
+  app.use(express.static(webpackConfig.output.path, { maxAge: 31536000 }));
 }
+
 // 设置资源目录
-app.use(assetRoot.route, express.static(assetRoot.path));
+app.use('/assets', express.static(f.config.uploadRootPath));
 
 // 使用session中间件
 app.use(

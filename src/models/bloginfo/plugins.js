@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const { Bloginfo } = require('../../lib/mongo');
-const File = require('../../lib/file');
+const f = require('../../lib/file');
 const { ADMIN_MAXIMUM } = require('../../config');
 const { isType, checkPropertyType } = require('../../lib/utils');
 const { ModelResultError, ParamTypeError } = require('../../lib/ExtendError');
@@ -129,7 +129,7 @@ exports.treat = (bloginfo, reservedKeys) => {
     if (!reservedKeys.includes(key)) {
       delete bloginfo[key];
     } else if (key === 'logo' && bloginfo[key]) {
-      bloginfo[key] = File.image.fillLogoPath(bloginfo[key]);
+      bloginfo[key] = f.image.resolveLogoPath(bloginfo[key]);
     }
   });
 

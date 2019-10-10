@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const { Bloginfo } = require('../../lib/mongo');
-const File = require('../../lib/file');
+const f = require('../../lib/file');
 const { isType, checkPropertyType } = require('../../lib/utils');
 const {
   ModelResultError,
@@ -62,7 +62,7 @@ exports.updateOne = (bloginfo, doc) => {
     result => {
       if (doc.logo && bloginfo.logo) {
         // 如果修改成功且有更新logo，则删除旧的logo文件
-        doc.logo && File.image.deleteLogo(bloginfo.logo);
+        doc.logo && f.image.deleteLogo(bloginfo.logo);
       }
     }, errorHandler);
 };

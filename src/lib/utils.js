@@ -257,3 +257,15 @@ exports.checkPropertyType = (data, fields) => {
     }
   }
 };
+
+/**
+ * 对需要转为正则表达式的字符串预先做去歧义
+ * @param  {string} string 需要转为正则表达式的字符串
+ * @return {string}
+ */
+exports.escapeREString = (string) => {
+  // 匹配在正则表达式中有特殊作用的符号，主要是用来消除以任何字符串生成的正则表达式中的歧义
+  const escapeRE = /([\*\.\?\+\$\^\[\]\(\)\{\}\|\\\/])/g;
+
+  return string.replace(escapeRE, '\\$1');
+}

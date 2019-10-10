@@ -1,6 +1,6 @@
 const path = require('path');
+const webpackConfig = require('../../frontend/config/webpack.base.conf');
 const { responseCode } = require('../config');
-const { wwwAssetPath } = require('../lib/file');
 const { OperatingError } = require('../lib/ExtendError');
 
 module.exports = function(app) {
@@ -13,7 +13,7 @@ module.exports = function(app) {
     let pathHead = req.path.split('/')[1];
 
     if (pathHead !== 'api') {
-      let filePath = path.resolve(wwwAssetPath, 'index.html');
+      let filePath = path.resolve(webpackConfig.output.path, 'index.html');
       return res.sendFile(filePath, err => {
         if (err) {
           return next(err);

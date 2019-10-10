@@ -4,7 +4,7 @@ const { checkLogin } = require('../middlewares/check');
 const { organizeImageCreateFields } = require('../middlewares/organize');
 const { errorInterceptor, deleteRedundantFile } = require('../middlewares/others');
 const { SUCCESS } = require('../config').responseCode;
-const File = require('../lib/file');
+const f = require('../lib/file');
 
 // 获取图片库图片信息
 router.get(
@@ -31,7 +31,7 @@ router.post(
     let data = req.locals.info.map(img => {
       return {
         filename: img.uploadname,
-        src: File.image.fillResourcePath(img.filename)
+        src: f.image.resolveResourcePath(img.filename)
       };
     });
 

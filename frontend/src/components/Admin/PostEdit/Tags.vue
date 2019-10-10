@@ -308,6 +308,7 @@ export default {
             font-size: 1.4rem;
             padding: 0 10px 0 15px;
             line-height: $itemHeight;
+            overflow: hidden;
             %icon {
               width: $itemHeight;
               height: $itemHeight;
@@ -324,6 +325,7 @@ export default {
             }
           }
           .tag {
+            cursor: pointer;
             .icon {
               display: initial;
             }

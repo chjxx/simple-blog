@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const { User } = require('../../lib/mongo');
-const File = require('../../lib/file');
+const f = require('../../lib/file');
 const { checkPropertyType } = require('../../lib/utils');
 const { ParamTypeError, ModelValidationError, ModelResultError } = require('../../lib/ExtendError');
 const errorHandler = require('./errorHandler');
@@ -84,7 +84,7 @@ exports.updateOne = (user, doc) => {
   return user
     .updateOne(doc, { runValidators: true })
     .then(result => {
-      doc.avatar && File.image.deleteAvatar(user.avatar);
+      doc.avatar && f.image.deleteAvatar(user.avatar);
 
       return result;
     }, errorHandler);
@@ -109,6 +109,6 @@ exports.del = (user) => {
 
   return user.remove()
     .then(() => {
-      user.avatar && File.image.deleteAvatar(user.avatar);
+      user.avatar && f.image.deleteAvatar(user.avatar);
     }, errorHandler);
 };
