@@ -121,6 +121,8 @@ export default {
         vm.$nextTick(() => {
           vm.scrollTo(to.meta.lastScrollTop);
         });
+      } else {
+        this.$refs.scrollBox.scrollTop = 0;
       }
     },
     /**

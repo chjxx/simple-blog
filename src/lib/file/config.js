@@ -12,7 +12,7 @@ module.exports = {
     others: './others'
   },
   // 资源的公共路径（绝对路径）：在云服务器就用云服务器的地址
-  accessPublicPath: 'https://chjxx.github.io/simple-blog/assets',
+  accessPublicPath: '/assets',
   // 各类型访问的相对路径
   accessPath: {
     image: {

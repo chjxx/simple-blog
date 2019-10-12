@@ -126,6 +126,8 @@ export default {
         this.$nextTick(() => {
           this.scrollTo(to.meta.lastScrollTop);
         });
+      } else {
+        this.$refs.scrollBox.scrollTop = 0;
       }
     },
     /**
