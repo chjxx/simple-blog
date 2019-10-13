@@ -85,7 +85,7 @@ export default {
           id: rawPost._id,
           title: rawPost.title,
           coverCSSVal: rawPost.cover ? `url(${rawPost.cover})` : '',
-          describe: rawPost.content,
+          describe: rawPost.describe,
           commentsCount: rawPost.commentsCount,
           createdAt: moment(rawPost.created_at).format('YYYY年M月D日  hh:mm:ss'),
           author: {
@@ -179,10 +179,14 @@ export default {
       let windowHeight = window.innerHeight;
       // 监听窗口滚动
       this.scrollBoxListenr = throttle(e => {
-        if (this.$refs.statebar) {
+        console.log('scroll')
+        console.log(this.$refs);
+        if (this.$refs.stateBar) {
+          console.log('has statebar')
           // 获取状态条顶部写窗口顶部的距离
           let stateBarTop = this.$refs.stateBar.getBoundingClientRect().top;
           // 如果文章加载是暂停状态，进度条与窗口高度相同（即再向下滑的话在窗口中就能看到进度条），则继续加载文章
+          console.log({stateBarTop}, {windowHeight});
           if (this.state === STOP && (stateBarTop <= windowHeight)) {
             this.fetchPosts();
           }

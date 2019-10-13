@@ -1,6 +1,6 @@
 {
   "name": "Simple-blog",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simple single page blog",
   "main": "index.js",
   "scripts": {
@@ -37,6 +37,7 @@
     "clean-webpack-plugin": "^0.1.19",
     "core-js": "^2.6.9",
     "css-loader": "^1.0.0",
+    "cz-conventional-changelog": "^3.0.2",
     "eslint": "5.6.1",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.14.0",
@@ -78,5 +79,10 @@
   "browserslist": [
     "cover 99.5%",
     "not ie < 10"
-  ]
+  ],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }

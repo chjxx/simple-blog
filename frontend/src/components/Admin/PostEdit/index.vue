@@ -62,6 +62,11 @@
             <div class="cover-ctnr">
               <Cover :post-cover="post.cover" ref="cover"></Cover>
             </div>
+            <!-- 文章描述 -->
+            <div class="describe-ctnr">
+              <div class="tt">文章描述</div>
+              <textarea class="ct u-ipt-text1" v-model="post.describe"></textarea>
+            </div>
             <!-- 文章标签 -->
             <div class="tags-ctnr">
               <Tags :post-tags="post.tags" ref="tag"></Tags>
@@ -426,6 +431,19 @@ export default {
           }
           .cover-ctnr {
             margin-top: 25px;
+          }
+          .describe-ctnr {
+            margin-top: 20px;
+            .tt {
+              font-size: 1.4rem;
+              line-height: 30px;
+            }
+            .ct {
+              width: 100%;
+              min-height: 50px;
+              padding: 8px;
+              overflow: auto;
+            }
           }
           .tags-ctnr {
             margin-top: 20px;
