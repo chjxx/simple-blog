@@ -347,7 +347,7 @@ exports.del = posts => {
 };
 
 function simplifyImageUrl(content) {
-  const imageRE = /!\[([\s\S]*)\]\(([\S]*)([\s\S]*)\)/g;
+  const imageRE = /!\[([\s\S]*?)\]\(([\S]*?)([\s\S]*?)\)/g;
 
   return content.replace(imageRE, matched => {
     return f.image.simplifyResourcePath(matched);

@@ -9,14 +9,18 @@
 ::before,
 ::after {
   box-sizing: inherit;
-  transition: all 0.1s;
+  transition: inherit;
+}
+
+html,
+textarea,
+input {
+  font-family: system-ui,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,
+    Helvetica,Arial,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol;
 }
 
 html {
-  font-family: 'Helvetica Neue',Helvetica,Arial,'PingFang SC',
-    'Hiragino Sans GB','Heiti SC','Microsoft YaHei','WenQuanYi Micro Hei',sans-serif;
   font-size: 62.5%;
-
 }
 
 html, body {
@@ -26,10 +30,13 @@ html, body {
   color: rgb(51, 51, 51);
   overflow: hidden;
   word-break: break-word;
-  box-sizing: border-box;
 }
 
 body {
+  box-sizing: border-box;
+  transition: all 0.1s;
+  // 基础字体大小14px;
+  font-size: 1.4rem;
   background-color: #f0f0f0;
   &.theme-dark {
     background-color: #121212;

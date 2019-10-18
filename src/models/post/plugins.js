@@ -82,7 +82,7 @@ exports.treat = (result, reservedKeys) => {
       } else if (key === 'author' && post[key].avatar) {
         post[key].avatar = f.image.resolveAvatarPath(post[key].avatar);
       } else if (key === 'content' && post[key]) {
-        const imageRE = /!\[([\s\S]*)\]\(([\S]*)([\s\S]*)\)/g;
+        const imageRE = /!\[([\s\S]*?)\]\(([\S]*?)([\s\S]*?)\)/g;
 
         post[key] = post[key].replace(imageRE, (matched, p1, p2, p3) => {
           return `![${p1}](${f.image.resolveResourcePath(p2)}${p3})`;

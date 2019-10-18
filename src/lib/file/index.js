@@ -95,7 +95,8 @@ function resolveImageUploadPath(type, fileName) {
 
 function simplifyImageAccessPath(type, p) {
   let imageAccessPublicPath = resolveImageAccessPath(type, '');
-  const accessPublicPathRE = new RegExp(escapeREString(imageAccessPublicPath));
+
+  const accessPublicPathRE = new RegExp(escapeREString(imageAccessPublicPath), 'g');
 
   return p.replace(accessPublicPathRE, '');
 }

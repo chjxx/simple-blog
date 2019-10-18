@@ -200,8 +200,8 @@ export default {
   },
   watch: {
     // 监听组件加载状态
-    state(val) {
-      if (val === FINISH) {
+    state(newState) {
+      if (newState === FINISH) {
         // 加载完成后初始化滚动
         this.$nextTick(() => {
           this._initScroll();

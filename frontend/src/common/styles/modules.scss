@@ -219,6 +219,7 @@
       color: textIptColor;
       font-size: 0;
       >input {
+        font-size: 1.4rem;
         &:nth-child(1) {
           width: calc((100% - 15px) / 2);
         }

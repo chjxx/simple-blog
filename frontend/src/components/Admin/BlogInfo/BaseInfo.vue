@@ -102,6 +102,7 @@
 
 <script>
 import { cloneDeep } from 'common/scripts/utils';
+import { compressImage } from 'common/scripts/fileUtils';
 
 const [LOADING, FINISH] = ['loading', 'finish'];
 
@@ -155,6 +156,7 @@ export default {
       let formData = new FormData(this.$refs.form);
 
       this.state = LOADING;
+
       // 如果LOGO未改变，则删除logo属性，不上传LOGO
       if (!this.logoChanged) {
         formData.delete('logo');
@@ -171,8 +173,32 @@ export default {
       });
       // 将原有的数组转成字符串，以便传输及后续服务端的处理
       formData.set('filling', JSON.stringify(filling));
-      // 两个cb，第一个是成功的回调，第二个是失败的回调
-      this.$emit('update', formData, cb, cb);
+
+      return new Promise((resolve, reject) => {
+        if (this.logoChanged) {
+          compressImage(this.$refs.logo.files[0], {
+            eWidth: 300,
+            eHeight: 300,
+            size: 'cut',
+            position: {
+              x: 'center',
+              y: 'middle'
+            }
+          }).then(blob => {
+            formData.set('logo', blob, `logo.${blob.type.split('/').pop()}`);
+
+            resolve();
+          });
+        } else {
+          // 如果LOGO未改变，则删除logo属性，不上传LOGO
+
+          formData.delete('logo');
+          resolve();
+        }
+      }).then(() => {
+        // 两个cb，第一个是成功的回调，第二个是失败的回调
+        this.$emit('update', formData, cb, cb);
+      });
 
       function cb() {
         vm.state = FINISH;
