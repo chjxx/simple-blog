@@ -56,7 +56,8 @@
       <!-- 个人简介 -->
       <label class="textarea-item">
         <span class="title">个人简介： </span>
-        <textarea name="bio" class="u-ipt-text1" v-model="account.bio"></textarea>
+        <InputAutoSize ref="bio" :content="account.bio"></InputAutoSize>
+        <!-- <textarea name="bio" class="u-ipt-text1" v-model="account.bio"></textarea> -->
       </label>
       <!-- 提交按钮 -->
       <div class="submit">
@@ -67,6 +68,8 @@
 </template>
 
 <script>
+import { compressImage } from 'common/scripts/fileUtils';
+
 const [LOADING, FINISH] = ['loading', 'finish'];
 
 export default {
@@ -119,13 +122,33 @@ export default {
       let formData = new FormData(this.$refs.form);
 
       this.state = LOADING;
-      // 如果头像未改变，则删除avatar字段
-      if (!this.avatarChanged) {
-        formData.delete('avatar');
-      }
 
-      // 更新信息，第一个cb为成功的回调，第二个cb为失败的回调
-      this.$emit('update', formData, cb, cb);
+      return new Promise((resolve, reject) => {
+        if (this.avatarChanged) {
+          compressImage(this.$refs.avatar.files[0], {
+            eWidth: 300,
+            eHeight: 300,
+            size: 'cut',
+            position: {
+              x: 'center',
+              y: 'middle'
+            }
+          }).then(blob => {
+            formData.set('avatar', blob, `avatar.${blob.type.split('/').pop()}`);
+
+            resolve();
+          });
+        } else {
+          formData.set('bio', this.$refs.bio.getContent());
+          // 如果头像未改变，则删除avatar字段
+          formData.delete('avatar');
+
+          resolve();
+        }
+      }).then(() => {
+        // 更新信息，第一个cb为成功的回调，第二个cb为失败的回调
+        this.$emit('update', formData, cb, cb);
+      });
 
       function cb() {
         vm.state = FINISH;

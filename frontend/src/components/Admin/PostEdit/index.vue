@@ -65,7 +65,7 @@
             <!-- 文章描述 -->
             <div class="describe-ctnr">
               <div class="tt">文章描述</div>
-              <textarea class="ct u-ipt-text1" v-model="post.describe"></textarea>
+              <InputAutoSize ref="describe" :content="post.describe"></InputAutoSize>
             </div>
             <!-- 文章标签 -->
             <div class="tags-ctnr">
@@ -167,7 +167,8 @@ export default {
     _initScroll() {
       this.extendsScroll = new BScroll(this.$refs.extends, {
         click: true,
-        mouseWheel: true
+        mouseWheel: true,
+        preventDefault: false
       });
     },
     /**
@@ -214,6 +215,7 @@ export default {
         this.post.state = btn.postToState;
         this.post.tags = this.$refs.tag.getTags();
         this.post.cover = this.$refs.cover.getCover();
+        this.post.describe = this.$refs.describe.getContent();
 
         let formData = new FormData();
         // 添加字段到表格(FormData)
@@ -282,8 +284,8 @@ export default {
   },
   watch: {
     // 监听文章加载状态，判断是否可以开始初始化滚动
-    state(val) {
-      if (val === FINISH) {
+    state(newState) {
+      if (newState === FINISH) {
         this.$nextTick(() => {
           this._initScroll();
         });
@@ -318,6 +320,7 @@ export default {
     }
   }
 };
+
 </script>
 
 <style lang="scss">
@@ -437,12 +440,6 @@ export default {
             .tt {
               font-size: 1.4rem;
               line-height: 30px;
-            }
-            .ct {
-              width: 100%;
-              min-height: 50px;
-              padding: 8px;
-              overflow: auto;
             }
           }
           .tags-ctnr {

@@ -39,7 +39,7 @@
       <!-- 文章内容 -->
       <div
         class="ct markdown-body"
-        v-html="contentHTML"
+        v-html="convertToInnerHTML(post.content)"
         ref="content"
       ></div>
       <!-- 文章相关信息 -->
@@ -76,10 +76,7 @@ export default {
       catalogElmInitialRects: [],
       // 当前屏幕正在显示的部分的head的索引
       focusingHeadIndex: null,
-      throttledScrollListener: null,
-      contentHTML: '',
-      // 内容中的图片元素
-      imageCtnrElts: []
+      throttledScrollListener: null
     };
   },
   methods: {
@@ -102,33 +99,6 @@ export default {
             // 判断是否还未滚动达下一个head的高度
             return (hElms[index + 1].top - 1) > scrollTop;
           }
-        }
-      });
-
-      this.updateImages();
-    },
-    updateImages() {
-      let windowHeight = window.innerHeight;
-
-      this.imageCtnrElts.find(imgCtnrElt => {
-        let rect = imgCtnrElt.getBoundingClientRect();
-
-        if (rect.top > 0 && rect.top < windowHeight) {
-          let src = imgCtnrElt.getAttribute('data-src');
-          let alt = imgCtnrElt.getAttribute('data-alt');
-          let imgElt = document.createElement('img');
-
-          imgElt.onload = () => {
-            let defaultImg = imgCtnrElt.querySelector('.default');
-
-            if (defaultImg) {
-              imgCtnrElt.removeChild(defaultImg);
-              imgCtnrElt.appendChild(imgElt);
-            }
-          };
-
-          imgElt.alt = alt;
-          imgElt.src = src;
         }
       });
     },
@@ -166,13 +136,12 @@ export default {
      * @param  {string} mdText
      * @return {string} innerHTML
      */
-    convertToInnerHTML() {
+    convertToInnerHTML(mdText) {
       let renderer = new marked.Renderer();
       // 设置head元素处理函数
       renderer.heading = generateHeadingRender('heading');
-      renderer.image = imageRender;
 
-      return marked(this.post.content, { headerIds: false, renderer });
+      return marked(mdText, { headerIds: false, renderer });
 
       /**
        * 生成renderer.heading函数并返回
@@ -186,12 +155,6 @@ export default {
           return `<h${level} id="${IDPrefix}-${index++}">${text}</h${level}>`;
         };
       }
-
-      function imageRender(href, title, text) {
-        return `<p class="img-ctnr" data-src="${href}" data-alt="${text}">
-          <span class="default"></span>
-        </p>`;
-      }
     }
   },
   watch: {
@@ -199,15 +162,12 @@ export default {
     post(post) {
       // 处理时间戳
       post.updated_at = moment(post.updated_at).format('YYYY年M月D日 HH:mm:ss');
-
-      window.document.title = post.title;
-
-      this.contentHTML = this.convertToInnerHTML();
-
       // 文章数据初次作用到页面后处理
       this.$nextTick(() => {
         // 选择文章的所有标题元素
         let $heads = this.$refs.content.querySelectorAll('h1,h2,h3,h4,h5,h6');
+
+        if (!$heads.length) return;
 
         [...$heads].forEach(hElm => {
           // 用标题元素的数据生成文章目录数据
@@ -219,22 +179,15 @@ export default {
           // 保存文章标题相对于页面顶部的初始位置
           this.headElmInitialRects.push(hElm.getBoundingClientRect());
         });
-
-        this.imageCtnrElts = [...this.$refs.content.querySelectorAll('.img-ctnr')];
-
         this.throttledScrollListener = throttle(this.scrollBoxListener);
         // 监听滚动事件
         this.addScrollBoxListener(this.throttledScrollListener);
         // 目录数据初次作用到页面后处理
         this.$nextTick(() => {
-          this.updateImages();
-
-          if (this.catalogList.length) {
-            // 保存目录相对于页面顶部的初始位置
-            this.catalogElmInitialRects = [...this.$refs.sideCatalog.children].map(li => {
-              return li.getBoundingClientRect();
-            });
-          }
+          // 保存目录相对于页面顶部的初始位置
+          this.catalogElmInitialRects = [...this.$refs.sideCatalog.children].map(li => {
+            return li.getBoundingClientRect();
+          });
         });
       });
     },
@@ -273,14 +226,12 @@ export default {
   max-width: 800px;
   .aside-catalog-wrap {
     position: sticky;
-    // IE不支持sticky，用fixed代替
     position: fixed\0;
     top: 0;
     right: 0;
     .aside-catalog {
       position: absolute;
       right: -260px;
-      // IE不支持sticky，用fixed代替，调整参数
       right: 40px\0;
       width: 250px;
       background-color: #fff;
@@ -342,15 +293,6 @@ export default {
     }
     >.ct {
       padding: 20px 25px;
-      .img-ctnr {
-        .default {
-          display: inline-block;
-          width: 100%;
-          max-width: 500px;
-          height: 300px;
-          background-color: rgba(0, 0, 0, .1);
-        }
-      }
     }
     >.other {
       padding: 15px 20px;

@@ -59,6 +59,7 @@
 <script>
 import { checkAccountFormat } from 'common/scripts/check';
 import { isType } from 'common/scripts/utils';
+import { compressImage } from 'common/scripts/fileUtils';
 
 const [LOADING, FINISH] = ['loading', 'finish'];
 
@@ -95,27 +96,41 @@ export default {
       this.cleanMsg();
       // 获取表格数据
       let formData = new FormData(this.$refs.form);
+
       // 验证表格数据格式
       let result = checkAccountFormat(formData);
+
       // 如果表格数据格式有错误
       if (isType(result, 'Error')) {
         this.showMsg(result.message);
         return;
       }
 
-      this.state = LOADING;
+      compressImage(this.$refs.avatar.files[0], {
+        eWidth: 300,
+        eHeight: 300,
+        size: 'cut',
+        position: {
+          x: 'center',
+          y: 'middle'
+        }
+      }).then(blog => {
+        this.state = LOADING;
 
-      this.$api.users
-        .signUpByAdmin(formData)
-        .then(resData => {
-          this.state = FINISH;
-          this.$emit('switch', 'SignIn');
-          this.$emit('message', '注册成功，请登陆！');
-        })
-        .catch(e => {
-          this.state = FINISH;
-          this.showMsg(e.message);
-        });
+        formData.set('avatar', blog, `avatar.${blog.type.split('/').pop()}`);
+
+        this.$api.users
+          .signUpByAdmin(formData)
+          .then(resData => {
+            this.state = FINISH;
+            this.$emit('switch', 'SignIn');
+            this.$emit('message', '注册成功，请登陆！');
+          })
+          .catch(e => {
+            this.state = FINISH;
+            this.showMsg(e.message);
+          });
+      });
     },
     /**
      * 改变图片地址

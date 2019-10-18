@@ -78,7 +78,8 @@ module.exports = merge(baseWebpackConfig, {
         ignoreCustomComments: true
       },
       // 内联文件匹配的正则表达式，配合html-webpack-inline-source-plugin使用，内联匹配的文件到html文件里
-      inlineSource: '(runtime|inlinesource).+\\.(js|css)'
+      inlineSource: '(runtime|inlinesource).+\\.(js|css)',
+      favicon: './frontend/src/common/images/favicon.ico'
     }),
     new HTMLInlineSourcePlugin(),
     new MiniCssExtractPlugin({

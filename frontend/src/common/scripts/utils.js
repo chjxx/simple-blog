@@ -209,3 +209,27 @@ export function throttle(fn, threshold) {
     }
   };
 }
+
+export function createElt(innerHTML) {
+  let d = document.createElement('div');
+
+  d.innerHTML = innerHTML;
+
+  return d;
+}
+
+export default {
+  qs,
+  cloneDeep,
+  generateString,
+  convertToQuery,
+  forEachRight,
+  capitalizeFirstLetter,
+  getType,
+  isType,
+  isSomeType,
+  notTypes,
+  escapeREString,
+  throttle,
+  createElt
+};

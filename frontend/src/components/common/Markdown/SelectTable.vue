@@ -246,9 +246,9 @@ export default {
           { data: file, name: filename, title, url }
         );
       } else if (this.isImageResourceForm) {
-        let { title, src } = item;
+        let { title, filename } = item;
 
-        this.insert('image', { title, url: src });
+        this.insert('image', { title, url: filename });
       }
     },
     /**
