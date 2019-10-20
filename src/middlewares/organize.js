@@ -1,15 +1,15 @@
 const path = require('path');
 const f = require('../lib/file');
-const { isType, notType, copyFields, parseJSONFields, checkPropertyType, sameArrayVal } = require('../lib/utils');
+const utils = require('../lib/utils');
 const { ParamTypeError, MiddlewareError } = require('../lib/ExtendError');
 
 // 组织字段的中间件
-exports.organizeField = options => {
-  let paramError = checkPropertyType({ options }, {
+exports.field = options => {
+  let paramError = utils.checkPropertyType({ options }, {
     options: 'Object',
     'options.key': {
       expected: 'String',
-      test: () => isType(options.key, 'String') && options.key.length !== 0
+      test: () => utils.isType(options.key, 'String') && options.key.length !== 0
     },
     'options.fields': 'Undefined|Array',
     'options.files': 'Undefined|Array',
@@ -26,12 +26,12 @@ exports.organizeField = options => {
     let result = {};
 
     if (fields) {
-      copyFields(req.fields, fields, result);
+      utils.copyFields(req.fields, fields, result);
     }
 
     if (arrayFields) {
       try {
-        parseJSONFields(result, arrayFields);
+        utils.parseJSONFields(result, arrayFields);
       } catch (err) {
         return next(new MiddlewareError('字段值不合法！'));
       }
@@ -52,14 +52,14 @@ exports.organizeField = options => {
 };
 
 // 组织上传的图片信息的中间件
-exports.organizeImageCreateFields = (req, res, next) => {
+exports.imageCreateFields = (req, res, next) => {
   let info;
 
   // 处理图片信息数据
   try {
     info = JSON.parse(req.fields.info);
 
-    if (notType(info, 'Array')) {
+    if (utils.notType(info, 'Array')) {
       throw new Error('图片信息格式不合法！');
     }
   } catch (err) {
@@ -81,7 +81,7 @@ exports.organizeImageCreateFields = (req, res, next) => {
   let infoFileNames = info.map(i => i.filename);
   let fileFileNames = fileKeys.map(key => req.files[key].name);
   // 比如图片信息的一致性
-  if (!sameArrayVal(infoFileNames, fileFileNames)) {
+  if (!utils.sameArrayVal(infoFileNames, fileFileNames)) {
     // 如果图片信息加载错误
     deleteImages(req.files);
 
@@ -106,7 +106,7 @@ exports.organizeImageCreateFields = (req, res, next) => {
 
   function deleteImages(files) {
     Object.keys(files).forEach(key => {
-      f.delete(files[key].path);
+      f.del.file(files[key].path);
     });
   }
 };

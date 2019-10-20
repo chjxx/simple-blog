@@ -88,13 +88,6 @@ export const routes = [
     meta: {
       keepAlive: false,
       deepth: 2
-    },
-    // 拦截路由检查账户登陆情况, 如果未登陆账户则跳转到登陆页。
-    beforeEnter(to, from, next) {
-      api.users.getAccountInfo().then(next)
-      .catch(err => {
-        next({ path: '/sign' });
-      });
     }
   },
   {

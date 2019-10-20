@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
-const { User } = require('../../lib/mongo');
+const MongoModel = require('../../lib/mongo');
 const f = require('../../lib/file');
-const { checkPropertyType } = require('../../lib/utils');
+const utils = require('../../lib/utils');
 const { ParamTypeError, ModelValidationError, ModelResultError } = require('../../lib/ExtendError');
 const errorHandler = require('./errorHandler');
 
@@ -13,7 +13,7 @@ const PasswordPattern = /^[\w]{6,20}$/;
  * @return {Promise}
  */
 exports.create = userInfo => {
-  let typeError = checkPropertyType({ userInfo }, {
+  let typeError = utils.checkPropertyType({ userInfo }, {
     userInfo: 'Object|Array'
   });
 
@@ -27,7 +27,7 @@ exports.create = userInfo => {
 
   userInfo.password = bcrypt.hashSync(userInfo.password, 10);
 
-  return User.create(userInfo).catch(errorHandler);
+  return MongoModel.User.create(userInfo).catch(errorHandler);
 };
 
 /**
@@ -36,7 +36,7 @@ exports.create = userInfo => {
  * @return {Promise}
  */
 exports.getOne = (filter) => {
-  let typeError = checkPropertyType({ filter }, {
+  let typeError = utils.checkPropertyType({ filter }, {
     filter: 'Object'
   });
 
@@ -44,7 +44,7 @@ exports.getOne = (filter) => {
     return Promise.reject(new ParamTypeError(typeError));
   }
 
-  return User.findOne(filter)
+  return MongoModel.User.findOne(filter)
     .then(user => {
       if (!user) {
         throw new ModelResultError('该用户不存在！');
@@ -61,10 +61,10 @@ exports.getOne = (filter) => {
  * @return {Promise}
  */
 exports.updateOne = (user, doc) => {
-  let typeError = checkPropertyType({ user, doc }, {
+  let typeError = utils.checkPropertyType({ user, doc }, {
     user: {
       expected: 'MongooseDocument',
-      test: (val) => val instanceof User
+      test: (val) => val instanceof MongoModel.User
     },
     doc: 'Object'
   });
@@ -84,7 +84,7 @@ exports.updateOne = (user, doc) => {
   return user
     .updateOne(doc, { runValidators: true })
     .then(result => {
-      doc.avatar && f.image.deleteAvatar(user.avatar);
+      doc.avatar && f.del.image.avatar(user.avatar);
 
       return result;
     }, errorHandler);
@@ -96,10 +96,10 @@ exports.updateOne = (user, doc) => {
  * @return {Promise}
  */
 exports.del = (user) => {
-  let typeError = checkPropertyType({ user }, {
+  let typeError = utils.checkPropertyType({ user }, {
     user: {
       expected: 'MongooseDocument',
-      test: (val) => val instanceof User
+      test: (val) => val instanceof MongoModel.User
     }
   });
 
@@ -109,6 +109,6 @@ exports.del = (user) => {
 
   return user.remove()
     .then(() => {
-      user.avatar && f.image.deleteAvatar(user.avatar);
+      user.avatar && f.del.image.avatar(user.avatar);
     }, errorHandler);
 };

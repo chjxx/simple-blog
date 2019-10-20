@@ -16,15 +16,19 @@ mongoose.connection.on('connected', () => {
 });
 // mongoose连接断开时的监听函数
 mongoose.connection.on('disconnected', () => {
-  mongooseLogger.warn('Disconnected from the MongoDB server！');
+  mongooseLogger.warn('Disconnected from MongoDB server！');
 });
 // mongoose连接错误时的监听函数
 mongoose.connection.on('error', (e) => {
   mongooseLogger.error(e.message);
 });
 
-// 连接MongoDB
-mongoose.connect(config.mongodb, { useNewUrlParser: true, useCreateIndex: true });
+if (config.mongodb) {
+  // 有配置则连接MongoDB
+  mongoose.connect(config.mongodb, { useNewUrlParser: true, useCreateIndex: true });
+} else {
+  mongooseLogger.error('Mongodb location doesnt config!');
+}
 
 // 初始化 Model
 exports.User = UserModel;

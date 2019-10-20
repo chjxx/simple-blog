@@ -1,8 +1,8 @@
-const { ObjectId } = require('mongoose').Types;
-const { Bloginfo } = require('../../lib/mongo');
+const ObjectId = require('mongoose').Types.ObjectId;
+const MongoModel = require('../../lib/mongo');
 const f = require('../../lib/file');
-const { ADMIN_MAXIMUM } = require('../../config');
-const { isType, checkPropertyType } = require('../../lib/utils');
+const ADMIN_MAXIMUM = require('../../config').ADMIN_MAXIMUM;
+const utils = require('../../lib/utils');
 const { ModelResultError, ParamTypeError } = require('../../lib/ExtendError');
 
 /**
@@ -11,7 +11,7 @@ const { ModelResultError, ParamTypeError } = require('../../lib/ExtendError');
  * @return {Object|Error}
  */
 exports.checkAdminLimit = bloginfo => {
-  let paramError = checkPropertyType({ bloginfo }, {
+  let paramError = utils.checkPropertyType({ bloginfo }, {
     bloginfo: 'Object',
     'bloginfo.admin': 'Array'
   });
@@ -36,7 +36,7 @@ exports.checkAdminLimit = bloginfo => {
  * @return {Object|Error}
  */
 exports.checkAdmin = (bloginfo, user) => {
-  let paramError = checkPropertyType({
+  let paramError = utils.checkPropertyType({
     bloginfo,
     user
   }, {
@@ -45,7 +45,7 @@ exports.checkAdmin = (bloginfo, user) => {
     user: 'Object',
     'user._id': {
       expected: 'MongooseObjectId|string',
-      test: (val) => val instanceof ObjectId || isType(val, 'String')
+      test: (val) => val instanceof ObjectId || utils.isType(val, 'String')
     }
   });
 
@@ -73,7 +73,7 @@ exports.checkAdmin = (bloginfo, user) => {
  * @return {Object|Error}
  */
 exports.checkNotAdmin = (bloginfo, user) => {
-  let paramError = checkPropertyType({
+  let paramError = utils.checkPropertyType({
     bloginfo,
     user
   }, {
@@ -82,7 +82,7 @@ exports.checkNotAdmin = (bloginfo, user) => {
     user: 'Object',
     'user._id': {
       expected: 'MongooseObjectId|string',
-      test: (val) => val instanceof ObjectId || isType(val, 'String')
+      test: (val) => val instanceof ObjectId || utils.isType(val, 'String')
     }
   });
 
@@ -110,7 +110,7 @@ exports.checkNotAdmin = (bloginfo, user) => {
  * @return {Object}
  */
 exports.treat = (bloginfo, reservedKeys) => {
-  let paramError = checkPropertyType({ bloginfo, reservedKeys }, {
+  let paramError = utils.checkPropertyType({ bloginfo, reservedKeys }, {
     bloginfo: 'Object',
     reservedKeys: 'Undefined|Array'
   });
@@ -119,7 +119,7 @@ exports.treat = (bloginfo, reservedKeys) => {
     throw new ParamTypeError(paramError);
   }
 
-  if (bloginfo instanceof Bloginfo) {
+  if (bloginfo instanceof MongoModel.Bloginfo) {
     bloginfo = bloginfo.toObject();
   }
 
@@ -129,7 +129,7 @@ exports.treat = (bloginfo, reservedKeys) => {
     if (!reservedKeys.includes(key)) {
       delete bloginfo[key];
     } else if (key === 'logo' && bloginfo[key]) {
-      bloginfo[key] = f.image.resolveLogoPath(bloginfo[key]);
+      bloginfo[key] = f.path.resolve.image.access.logo(bloginfo[key]);
     }
   });
 

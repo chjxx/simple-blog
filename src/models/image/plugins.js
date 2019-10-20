@@ -1,6 +1,6 @@
-const Image = require('../../lib/mongo').Image;
+const MongoModel = require('../../lib/mongo');
 const f = require('../../lib/file');
-const { isType, getType, checkPropertyType } = require('../../lib/utils');
+const utils = require('../../lib/utils');
 const { ParamTypeError } = require('../../lib/ExtendError');
 /**
  * 处理用户数据
@@ -13,29 +13,29 @@ exports.treat = (result, reservedKeys) => {
   let images = [];
 
   // 统一文档格式，供后面数据处理
-  if (isType(result, 'Array')) {
+  if (utils.isType(result, 'Array')) {
     // 如果是MongooseDocument,则转为普通对象
-    result = result.map(image => (image instanceof Image) ? image.toObject() : image);
+    result = result.map(image => (image instanceof MongoModel.Image) ? image.toObject() : image);
 
     images = result;
   } else {
     // 如果是MongooseDocument,则转为普通对象
-    result = (result instanceof Image) ? result.toObject() : result;
+    result = (result instanceof MongoModel.Image) ? result.toObject() : result;
 
     images.push(result);
   }
 
   // 检查参数类型
-  let paramError = checkPropertyType({ images, reservedKeys }, {
+  let paramError = utils.checkPropertyType({ images, reservedKeys }, {
     images: {
       expected: 'ObjectArray',
-      test: (val) => val.every(image => isType(image, 'Object'))
+      test: (val) => val.every(image => utils.isType(image, 'Object'))
     },
     reservedKeys: 'Undefined|Array'
   });
   // 如果类型有错则报错
   if (paramError) {
-    paramError.actualType = images.map(image => getType(image)).join(',');
+    paramError.actualType = images.map(image => utils.getType(image)).join(',');
 
     throw new ParamTypeError(paramError);
   }
@@ -47,7 +47,7 @@ exports.treat = (result, reservedKeys) => {
       if (!reservedKeys.includes(key)) {
         delete img[key];
       } else if (key === 'filename' && img[key]) {
-        img[key] = f.image.resolveResourcePath(img[key]);
+        img[key] = f.path.resolve.image.access.resource(img[key]);
       }
     });
   });

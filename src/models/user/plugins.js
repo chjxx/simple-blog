@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const f = require('../../lib/file');
-const { User } = require('../../lib/mongo');
-const { isType, getType, checkPropertyType } = require('../../lib/utils');
+const MongoModel = require('../../lib/mongo');
+const utils = require('../../lib/utils');
 const { ParamTypeError, ModelValidationError } = require('../../lib/ExtendError');
 
 /**
@@ -11,7 +11,7 @@ const { ParamTypeError, ModelValidationError } = require('../../lib/ExtendError'
  * @return {Promise}
  */
 exports.checkPassword = (user, password) => {
-  let paramError = checkPropertyType({ user, password }, {
+  let paramError = utils.checkPropertyType({ user, password }, {
     user: 'Object',
     password: 'String'
   });
@@ -40,28 +40,28 @@ exports.treat = (result, reservedKeys) => {
   let users = [];
 
   // 统一文档格式，供后面数据处理
-  if (isType(result, 'Array')) {
+  if (utils.isType(result, 'Array')) {
     // 如果是MongooseDocument,则转为普通对象
-    result = result.map(user => (user instanceof User) ? user.toObject() : user);
+    result = result.map(user => (user instanceof MongoModel.User) ? user.toObject() : user);
 
     users = result;
   } else {
     // 如果是MongooseDocument,则转为普通对象
-    result = (result instanceof User) ? result.toObject() : result;
+    result = (result instanceof MongoModel.User) ? result.toObject() : result;
 
     users.push(result);
   }
   // 检查参数类型
-  let paramError = checkPropertyType({ users, reservedKeys }, {
+  let paramError = utils.checkPropertyType({ users, reservedKeys }, {
     users: {
       expected: 'ObjectArray',
-      test: (val) => val.every(user => isType(user, 'Object'))
+      test: (val) => val.every(user => utils.isType(user, 'Object'))
     },
     reservedKeys: 'Undefined|Array'
   });
   // 如果类型有错则报错
   if (paramError) {
-    paramError.actualType = users.map(user => getType(user)).join(',');
+    paramError.actualType = users.map(user => utils.getType(user)).join(',');
 
     throw new ParamTypeError(paramError);
   }
@@ -73,7 +73,7 @@ exports.treat = (result, reservedKeys) => {
       if (!reservedKeys.includes(key)) {
         delete user[key];
       } else if (key === 'avatar' && user[key]) {
-        user[key] = f.image.resolveAvatarPath(user[key]);
+        user[key] = f.path.resolve.image.access.avatar(user[key]);
       }
     });
   });

@@ -1,6 +1,6 @@
-const { Post } = require('../../lib/mongo');
+const MongoModel = require('../../lib/mongo');
 const f = require('../../lib/file');
-const { notType, getType, checkPropertyType } = require('../../lib/utils');
+const utils = require('../../lib/utils');
 const {
   ParamTypeError,
   ModelResultError
@@ -13,7 +13,7 @@ const errorHandler = require('./errorHandler');
  * @return {Promise}
  */
 exports.create = doc => {
-  let paramError = checkPropertyType(
+  let paramError = utils.checkPropertyType(
     { doc },
     {
       doc: 'Object|Array'
@@ -28,7 +28,7 @@ exports.create = doc => {
     doc.content = simplifyImageUrl(doc.content);
   }
 
-  return Post.create(doc).catch(errorHandler);
+  return MongoModel.Post.create(doc).catch(errorHandler);
 };
 
 /**
@@ -38,7 +38,7 @@ exports.create = doc => {
  * @return {Promise}
  */
 exports.get = (filter, options) => {
-  let paramError = checkPropertyType(
+  let paramError = utils.checkPropertyType(
     { filter },
     {
       filter: 'Object'
@@ -54,7 +54,7 @@ exports.get = (filter, options) => {
   offset = offset || 0;
   limit = limit || 0;
 
-  return Post.find(filter)
+  return MongoModel.Post.find(filter)
     .skip(offset)
     .limit(limit)
     .populate({
@@ -73,7 +73,7 @@ exports.get = (filter, options) => {
  * @return {Promise}
  */
 exports.getOne = filter => {
-  let paramError = checkPropertyType(
+  let paramError = utils.checkPropertyType(
     { filter },
     {
       filter: 'Object'
@@ -84,7 +84,7 @@ exports.getOne = filter => {
     return Promise.reject(new ParamTypeError(paramError));
   }
 
-  return Post.findOne(filter)
+  return MongoModel.Post.findOne(filter)
     .populate({
       path: 'author',
       select: 'name avatar'
@@ -105,7 +105,7 @@ exports.getOne = filter => {
  * @return {Promise}
  */
 exports.getByTags = (filter, options) => {
-  let paramError = checkPropertyType(
+  let paramError = utils.checkPropertyType(
     { filter },
     {
       filter: 'Object',
@@ -140,7 +140,7 @@ exports.getByTags = (filter, options) => {
  * @return {Promise}
  */
 exports.getByKey = (filter, options) => {
-  let paramError = checkPropertyType(
+  let paramError = utils.checkPropertyType(
     { filter },
     {
       filter: 'Object',
@@ -194,7 +194,7 @@ exports.getTags = filter => {
 
   filter = filter || {};
 
-  let paramError = checkPropertyType(filter, {
+  let paramError = utils.checkPropertyType(filter, {
     state: 'Undefined|String'
   });
 
@@ -217,7 +217,7 @@ exports.getTags = filter => {
     }
   });
 
-  return Post.aggregate(stages).then(result => {
+  return MongoModel.Post.aggregate(stages).then(result => {
     let tags = {};
 
     if (result.length) {
@@ -245,12 +245,12 @@ exports.getTags = filter => {
  * @return {Promise}
  */
 exports.updateOne = (post, doc) => {
-  let paramError = checkPropertyType(
+  let paramError = utils.checkPropertyType(
     { post, doc },
     {
       post: {
         expected: 'MongooseDocument',
-        test: val => val instanceof Post
+        test: val => val instanceof MongoModel.Post
       },
       doc: 'Object'
     }
@@ -267,7 +267,7 @@ exports.updateOne = (post, doc) => {
   return post.updateOne(doc, { runValidators: true }).then(
     result => {
       if (doc.cover && post.cover) {
-        f.image.deleteCover(post.cover);
+        f.del.image.cover(post.cover);
       }
 
       return result;
@@ -280,12 +280,12 @@ exports.updateOne = (post, doc) => {
  * @return {Promise}
  */
 exports.increasePv = post => {
-  let paramError = checkPropertyType(
+  let paramError = utils.checkPropertyType(
     { post },
     {
       post: {
         expected: 'MongooseDocument',
-        test: val => val instanceof Post
+        test: val => val instanceof MongoModel.Post
       }
     }
   );
@@ -306,7 +306,7 @@ exports.increasePv = post => {
 exports.countDocument = filter => {
   filter = Object.assign({}, filter);
 
-  return Post.where(filter)
+  return MongoModel.Post.where(filter)
     .countDocuments()
     .catch(errorHandler);
 };
@@ -317,29 +317,29 @@ exports.countDocument = filter => {
  * @return {Promise}
  */
 exports.del = posts => {
-  if (notType(posts, 'Array')) {
+  if (utils.notType(posts, 'Array')) {
     posts = [posts];
   }
 
-  let paramError = checkPropertyType(
+  let paramError = utils.checkPropertyType(
     { posts },
     {
       posts: {
         expected: 'MongooseDocumentArray',
-        test: val => val.every(post => post instanceof Post)
+        test: val => val.every(post => post instanceof MongoModel.Post)
       }
     }
   );
 
   if (paramError) {
-    paramError.actualType = posts.map(post => getType(post)).join(',');
+    paramError.actualType = posts.map(post => utils.getType(post)).join(',');
 
     return Promise.reject(new ParamTypeError(paramError));
   }
 
   let postPromises = posts.map(post => {
     return post.remove().then(() => {
-      return post.cover && f.image.deleteCover(post.cover);
+      return post.cover && f.del.image.cover(post.cover);
     });
   });
 
@@ -350,6 +350,6 @@ function simplifyImageUrl(content) {
   const imageRE = /!\[([\s\S]*?)\]\(([\S]*?)([\s\S]*?)\)/g;
 
   return content.replace(imageRE, matched => {
-    return f.image.simplifyResourcePath(matched);
+    return f.path.simplify.image.access.resource(matched);
   });
 }

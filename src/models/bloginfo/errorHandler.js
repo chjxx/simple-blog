@@ -1,5 +1,5 @@
 const MongooseError = require('mongoose').Error;
-const { isType } = require('../../lib/utils');
+const utils = require('../../lib/utils');
 const { ModelValidationError, ModelCastError, ModelUnexpectedError } = require('../../lib/ExtendError');
 
 module.exports = (err) => {
@@ -7,12 +7,12 @@ module.exports = (err) => {
   if (err instanceof MongooseError) {
     let errorKey, error;
 
-    if (isType(err.errors, 'Object')) {
+    if (utils.isType(err.errors, 'Object')) {
       // 取第一个错误处理
       errorKey = Object.keys(err.errors)[0];
       error = err.errors[errorKey];
     } else {
-      if (isType(err, 'Object')) {
+      if (utils.isType(err, 'Object')) {
         errorKey = err.path;
         error = err;
       } else {

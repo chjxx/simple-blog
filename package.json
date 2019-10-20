@@ -1,12 +1,12 @@
 {
   "name": "Simple-blog",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A simple single page blog",
   "main": "index.js",
   "scripts": {
     "test": "mocha test",
     "dev": "cross-env NODE_ENV=development node src/index.js",
-    "build": "cross-env NODE_ENV=production webpack --config ./frontend/config/webpack.prod.conf.js",
+    "build": "cross-env NODE_ENV=production webpack --config ./frontend/config/webpack.prod.conf.js --progress",
     "start": "cross-env NODE_ENV=production node src/index.js",
     "analyzer": "webpack-bundle-analyzer ./www/stats.json"
   },

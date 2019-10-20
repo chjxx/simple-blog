@@ -1,5 +1,5 @@
 node_modules
 /assets
 /logs
-/security
+/src/lib/ssl
 /www
