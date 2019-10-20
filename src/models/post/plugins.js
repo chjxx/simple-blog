@@ -1,7 +1,7 @@
-const { ObjectId } = require('mongoose').Types;
-const { Post } = require('../../lib/mongo');
+const ObjectId = require('mongoose').Types.ObjectId;
+const MongoModel = require('../../lib/mongo');
 const f = require('../../lib/file');
-const { isType, getType, checkPropertyType } = require('../../lib/utils');
+const utils = require('../../lib/utils');
 const { ParamTypeError, ModelResultError } = require('../../lib/ExtendError');
 
 /**
@@ -11,17 +11,17 @@ const { ParamTypeError, ModelResultError } = require('../../lib/ExtendError');
  * @return {Object|Error}
  */
 exports.isAuthor = (post, user) => {
-  let paramError = checkPropertyType({ post, user }, {
+  let paramError = utils.checkPropertyType({ post, user }, {
     post: 'Object',
     'post.author': 'Object',
     'post.author._id': {
       expected: 'ObjectId|string',
-      test: (val) => val instanceof ObjectId || isType(val, 'String')
+      test: (val) => val instanceof ObjectId || utils.isType(val, 'String')
     },
     user: 'Object',
     'user._id': {
       expected: 'ObjectId|string',
-      test: (val) => val instanceof ObjectId || isType(val, 'String')
+      test: (val) => val instanceof ObjectId || utils.isType(val, 'String')
     }
   });
 
@@ -45,28 +45,28 @@ exports.isAuthor = (post, user) => {
 exports.treat = (result, reservedKeys) => {
   let posts = [];
 
-  if (isType(result, 'Array')) {
+  if (utils.isType(result, 'Array')) {
     // 如果是MongooseDocument,则转为普通对象
-    result = result.map(post => (post instanceof Post) ? post.toObject() : post);
+    result = result.map(post => (post instanceof MongoModel.Post) ? post.toObject() : post);
 
     posts = result;
   } else {
     // 如果是MongooseDocument,则转为普通对象
-    result = (result instanceof Post) ? result.toObject() : result;
+    result = (result instanceof MongoModel.Post) ? result.toObject() : result;
 
     posts.push(result);
   }
 
-  let paramError = checkPropertyType({ posts, reservedKeys }, {
+  let paramError = utils.checkPropertyType({ posts, reservedKeys }, {
     posts: {
       expected: 'ObjectArray',
-      test: (val) => val.every(post => isType(post, 'Object'))
+      test: (val) => val.every(post => utils.isType(post, 'Object'))
     },
     reservedKeys: 'Undefined|Array'
   });
 
   if (paramError) {
-    paramError.actualType = posts.map(post => getType(post)).join(',');
+    paramError.actualType = posts.map(post => utils.getType(post)).join(',');
 
     throw new ParamTypeError(paramError);
   }
@@ -78,14 +78,14 @@ exports.treat = (result, reservedKeys) => {
       if (!reservedKeys.includes(key)) {
         delete post[key];
       } else if (key === 'cover' && post[key]) {
-        post[key] = f.image.resolveCoverPath(post[key]);
+        post[key] = f.path.resolve.image.access.cover(post[key]);
       } else if (key === 'author' && post[key].avatar) {
-        post[key].avatar = f.image.resolveAvatarPath(post[key].avatar);
+        post[key].avatar = f.path.resolve.image.access.avatar(post[key].avatar);
       } else if (key === 'content' && post[key]) {
         const imageRE = /!\[([\s\S]*?)\]\(([\S]*?)([\s\S]*?)\)/g;
 
         post[key] = post[key].replace(imageRE, (matched, p1, p2, p3) => {
-          return `![${p1}](${f.image.resolveResourcePath(p2)}${p3})`;
+          return `![${p1}](${f.path.resolve.image.access.resource(p2)}${p3})`;
         });
       }
     });

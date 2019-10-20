@@ -1,10 +1,10 @@
-const UserModel = require('../models/user');
-const { checkPropertyType } = require('../lib/utils');
-const { errorInterceptor } = require('./others');
+const Model = require('../models');
+const utils = require('../lib/utils');
+const intercept = require('./intercept');
 const { MiddlewareError, ParamTypeError } = require('../lib/ExtendError');
 
 // 检查是否已经登陆过账户
-exports.checkLogin = (req, res, next) => {
+exports.login = (req, res, next) => {
   if (req.session && req.session.user) {
     return next();
   } else {
@@ -13,7 +13,7 @@ exports.checkLogin = (req, res, next) => {
 };
 
 // 检查是否未登陆过账户
-exports.checkNotLogin = (req, res, next) => {
+exports.notLogin = (req, res, next) => {
   if (req.session && req.session.user) {
     return next(new MiddlewareError('已登陆过账户！'));
   } else {
@@ -22,14 +22,14 @@ exports.checkNotLogin = (req, res, next) => {
 };
 
 // 检查是否为管理员账户
-exports.checkAdmin = errorInterceptor(async (req, res, next) => {
-  await UserModel.isAdmin(req.session.user);
+exports.admin = intercept.error(async (req, res, next) => {
+  await Model.user.isAdmin(req.session.user);
 
   next();
 });
 
 // 检查字段的中间件
-exports.checkField = (options) => {
+exports.field = (options) => {
   let paramType = {
     options: 'Object',
     'options.key': 'String',
@@ -37,7 +37,7 @@ exports.checkField = (options) => {
     'options.errorMessage': 'String'
   };
 
-  let paramError = checkPropertyType({ options }, paramType);
+  let paramError = utils.checkPropertyType({ options }, paramType);
 
   if (paramError) {
     throw new ParamTypeError(paramError);
@@ -46,7 +46,7 @@ exports.checkField = (options) => {
   let { key, fields, errorMessage } = options;
 
   return (req, res, next) => {
-    let propertyError = checkPropertyType(req.locals[key], fields);
+    let propertyError = utils.checkPropertyType(req.locals[key], fields);
 
     if (propertyError) {
       return next(new MiddlewareError(errorMessage));

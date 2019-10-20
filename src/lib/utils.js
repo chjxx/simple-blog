@@ -268,4 +268,4 @@ exports.escapeREString = (string) => {
   const escapeRE = /([\*\.\?\+\$\^\[\]\(\)\{\}\|\\\/])/g;
 
   return string.replace(escapeRE, '\\$1');
-}
+};

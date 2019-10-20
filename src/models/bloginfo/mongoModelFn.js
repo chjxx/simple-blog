@@ -1,7 +1,7 @@
-const { ObjectId } = require('mongoose').Types;
-const { Bloginfo } = require('../../lib/mongo');
+const ObjectId = require('mongoose').Types.ObjectId;
+const MongoModel = require('../../lib/mongo');
 const f = require('../../lib/file');
-const { isType, checkPropertyType } = require('../../lib/utils');
+const utils = require('../../lib/utils');
 const {
   ModelResultError,
   ParamTypeError
@@ -16,7 +16,7 @@ const errorHandler = require('./errorHandler');
 exports.create = info => {
   info = Object.assign({}, info);
 
-  return Bloginfo.create(info).catch(errorHandler);
+  return MongoModel.Bloginfo.create(info).catch(errorHandler);
 };
 
 /**
@@ -24,7 +24,7 @@ exports.create = info => {
  * @return {Promise}
  */
 exports.get = () => {
-  return Bloginfo.findOne().then(bloginfo => {
+  return MongoModel.Bloginfo.findOne().then(bloginfo => {
     if (!bloginfo) {
       throw new ModelResultError('博客基础信息未初始化！');
     }
@@ -40,7 +40,7 @@ exports.get = () => {
  * @return {Promise}
  */
 exports.updateOne = (bloginfo, doc) => {
-  let paramError = checkPropertyType(
+  let paramError = utils.checkPropertyType(
     {
       bloginfo,
       doc
@@ -48,7 +48,7 @@ exports.updateOne = (bloginfo, doc) => {
     {
       bloginfo: {
         expected: 'MongooseDocument',
-        test: val => val instanceof Bloginfo
+        test: val => val instanceof MongoModel.Bloginfo
       },
       doc: 'Object'
     }
@@ -62,7 +62,7 @@ exports.updateOne = (bloginfo, doc) => {
     result => {
       if (doc.logo && bloginfo.logo) {
         // 如果修改成功且有更新logo，则删除旧的logo文件
-        doc.logo && f.image.deleteLogo(bloginfo.logo);
+        doc.logo && f.del.image.logo(bloginfo.logo);
       }
     }, errorHandler);
 };
@@ -74,7 +74,7 @@ exports.updateOne = (bloginfo, doc) => {
  * @return {Promise}
  */
 exports.pushAdmin = (bloginfo, user) => {
-  let paramError = checkPropertyType(
+  let paramError = utils.checkPropertyType(
     {
       bloginfo,
       user
@@ -82,12 +82,12 @@ exports.pushAdmin = (bloginfo, user) => {
     {
       bloginfo: {
         expected: 'MongooseDocument',
-        test: () => bloginfo instanceof Bloginfo
+        test: () => bloginfo instanceof MongoModel.Bloginfo
       },
       user: 'Object',
       'user._id': {
         expected: 'MongooseObjectId|string',
-        test: val => val instanceof ObjectId || isType(val, 'String')
+        test: val => val instanceof ObjectId || utils.isType(val, 'String')
       }
     }
   );
@@ -106,7 +106,7 @@ exports.pushAdmin = (bloginfo, user) => {
  * @return {Promise}
  */
 exports.pullAdmin = (bloginfo, user) => {
-  let paramError = checkPropertyType(
+  let paramError = utils.checkPropertyType(
     {
       bloginfo,
       user
@@ -114,12 +114,12 @@ exports.pullAdmin = (bloginfo, user) => {
     {
       bloginfo: {
         expected: 'MongooseDocument',
-        test: () => bloginfo instanceof Bloginfo
+        test: () => bloginfo instanceof MongoModel.Bloginfo
       },
       user: 'Object',
       'user._id': {
         expected: 'MongooseObjectId|string',
-        test: val => val instanceof ObjectId || isType(val, 'String')
+        test: val => val instanceof ObjectId || utils.isType(val, 'String')
       }
     }
   );

@@ -1,7 +1,7 @@
-const { ObjectId } = require('mongoose').Types;
-const { Image } = require('../../lib/mongo');
+const ObjectId = require('mongoose').Types.ObjectId;
+const MongoModel = require('../../lib/mongo');
 const f = require('../../lib/file');
-const { isType, notType, getType, checkPropertyType } = require('../../lib/utils');
+const utils = require('../../lib/utils');
 const { ParamTypeError } = require('../../lib/ExtendError');
 const errorHandler = require('./errorHandler');
 
@@ -11,7 +11,7 @@ const errorHandler = require('./errorHandler');
  * @return {Promise}
  */
 exports.create = (doc) => {
-  let paramError = checkPropertyType({ doc }, {
+  let paramError = utils.checkPropertyType({ doc }, {
     doc: 'Object|Array'
   });
 
@@ -19,7 +19,7 @@ exports.create = (doc) => {
     throw new ParamTypeError(paramError);
   }
 
-  return Image.create(doc).catch(errorHandler);
+  return MongoModel.Image.create(doc).catch(errorHandler);
 };
 
 /**
@@ -29,11 +29,11 @@ exports.create = (doc) => {
  * @return {Promise}
  */
 exports.get = (filter, options) => {
-  let paramError = checkPropertyType({ filter }, {
+  let paramError = utils.checkPropertyType({ filter }, {
     filter: 'Object',
     'filter.owner': {
       expected: 'String|MongooseObjectId',
-      test: (val) => isType(val, 'String') || val instanceof ObjectId
+      test: (val) => utils.isType(val, 'String') || val instanceof ObjectId
     }
   });
 
@@ -46,7 +46,7 @@ exports.get = (filter, options) => {
   offset = offset || 0;
   limit = limit || 0;
 
-  return Image.find(filter)
+  return MongoModel.Image.find(filter)
     .skip(offset)
     .limit(limit)
     .populate({
@@ -66,10 +66,10 @@ exports.get = (filter, options) => {
  * @return {Promise}
  */
 exports.updateOne = (image, doc) => {
-  let paramError = checkPropertyType({ image, doc }, {
+  let paramError = utils.checkPropertyType({ image, doc }, {
     image: {
       expected: 'MongooseDocument',
-      test: (val) => val instanceof Image
+      test: (val) => val instanceof MongoModel.Image
     },
     doc: 'Object'
   });
@@ -87,19 +87,19 @@ exports.updateOne = (image, doc) => {
  * @return {Promise}
  */
 exports.del = images => {
-  if (notType(images, 'Array')) {
+  if (utils.notType(images, 'Array')) {
     images = [images];
   }
 
-  let paramError = checkPropertyType({ images }, {
+  let paramError = utils.checkPropertyType({ images }, {
     images: {
       expected: 'MongooseDocumentArray',
-      test: (val) => val.every(image => image instanceof Image)
+      test: (val) => val.every(image => image instanceof MongoModel.Image)
     }
   });
 
   if (paramError) {
-    paramError.actualType = images.map(image => getType(image)).join(',');
+    paramError.actualType = images.map(image => utils.getType(image)).join(',');
 
     return Promise.reject(new ParamTypeError(paramError));
   }
@@ -107,7 +107,7 @@ exports.del = images => {
   let imagePromises = images.map(img => {
     return img.remove()
       .then(() => {
-        return f.image.deleteResource(img.filename);
+        return f.del.image.resource(img.filename);
       }, errorHandler);
   });
 

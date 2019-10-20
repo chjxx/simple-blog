@@ -1,18 +1,15 @@
-const {
-  composeAsyncFunction,
-  bindTrailingArgs
-} = require('../../lib/utils');
-const Model = require('./model');
+const utils = require('../../lib/utils');
+const MongoModelFn = require('./mongoModelFn');
 const Plugins = require('./plugins');
 
-exports.create = Model.create;
+exports.create = MongoModelFn.create;
 
 /**
  * 获取处理后博客信息
  * @return {Promise}
  */
 exports.getTreated = () => {
-  let fn = composeAsyncFunction(Model.get, Plugins.treat);
+  let fn = utils.composeAsyncFunction(MongoModelFn.get, Plugins.treat);
 
   return fn();
 };
@@ -24,8 +21,8 @@ exports.getTreated = () => {
  */
 exports.isAdmin = user => {
   // 将user绑定到该函数参数的尾部
-  let checkAdminFn = bindTrailingArgs(Plugins.checkAdmin, user);
-  let fn = composeAsyncFunction(Model.get, checkAdminFn);
+  let checkAdminFn = utils.bindTrailingArgs(Plugins.checkAdmin, user);
+  let fn = utils.composeAsyncFunction(MongoModelFn.get, checkAdminFn);
 
   return fn();
 };
@@ -37,9 +34,9 @@ exports.isAdmin = user => {
  */
 exports.addAdmin = user => {
   // 将user绑定到该函数参数的尾部
-  let checkNotAdminFn = bindTrailingArgs(Plugins.checkNotAdmin, user);
-  let pushAdminFn = bindTrailingArgs(Model.pushAdmin, user);
-  let fn = composeAsyncFunction(Model.get, Plugins.checkAdminLimit, checkNotAdminFn, pushAdminFn);
+  let checkNotAdminFn = utils.bindTrailingArgs(Plugins.checkNotAdmin, user);
+  let pushAdminFn = utils.bindTrailingArgs(MongoModelFn.pushAdmin, user);
+  let fn = utils.composeAsyncFunction(MongoModelFn.get, Plugins.checkAdminLimit, checkNotAdminFn, pushAdminFn);
 
   return fn();
 };
@@ -51,8 +48,8 @@ exports.addAdmin = user => {
  */
 exports.reduceAdmin = user => {
   // 将user绑定到该函数参数的尾部
-  let pullAdminFn = bindTrailingArgs(Model.pullAdmin, user);
-  let fn = composeAsyncFunction(Model.get, pullAdminFn);
+  let pullAdminFn = utils.bindTrailingArgs(MongoModelFn.pullAdmin, user);
+  let fn = utils.composeAsyncFunction(MongoModelFn.get, pullAdminFn);
 
   return fn();
 };
@@ -66,8 +63,8 @@ exports.update = doc => {
   // 此接口不更新管理员账户
   doc.admin && delete doc.admin;
   // 将doc绑定到该函数参数的尾部
-  let updateFn = bindTrailingArgs(Model.updateOne, doc);
-  let fn = composeAsyncFunction(Model.get, updateFn);
+  let updateFn = utils.bindTrailingArgs(MongoModelFn.updateOne, doc);
+  let fn = utils.composeAsyncFunction(MongoModelFn.get, updateFn);
 
   return fn();
 };

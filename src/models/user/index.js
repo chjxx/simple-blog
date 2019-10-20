@@ -1,17 +1,17 @@
-const { composeAsyncFunction, bindTrailingArgs } = require('../../lib/utils');
+const utils = require('../../lib/utils');
 const BloginfoModel = require('../bloginfo');
 const ImageModel = require('../image');
-const Model = require('./model');
+const MongoModelFn = require('./mongoModelFn');
 const Plugins = require('./plugins');
 
-exports.create = Model.create;
+exports.create = MongoModelFn.create;
 
 /**
  * 根据ID获取账号
  * @param  {string} _id 用户ID，必填
  * @return {Promise}
  */
-exports.getByID = _id => Model.getOne({ _id });
+exports.getByID = _id => MongoModelFn.getOne({ _id });
 
 /**
  * 根据用户名获取账号
@@ -19,7 +19,7 @@ exports.getByID = _id => Model.getOne({ _id });
  * @param  {Object} options 进一步筛选数据
  * @return {Promise}
  */
-exports.getByName = (name, options) => Model.getOne({ name }, options);
+exports.getByName = (name, options) => MongoModelFn.getOne({ name }, options);
 
 /**
  * 检查账户是否为管理员账户
@@ -42,8 +42,8 @@ exports.addToAdmin = BloginfoModel.addAdmin;
  * @return {Promise}
  */
 exports.update = (user, doc) => {
-  let updateFn = bindTrailingArgs(Model.updateOne, doc);
-  let fn = composeAsyncFunction(exports.getByID, updateFn);
+  let updateFn = utils.bindTrailingArgs(MongoModelFn.updateOne, doc);
+  let fn = utils.composeAsyncFunction(exports.getByID, updateFn);
 
   return fn(user._id);
 };
@@ -54,7 +54,7 @@ exports.update = (user, doc) => {
  * @return {Promise}
  */
 exports.del = user => {
-  let fn = composeAsyncFunction(exports.getByID, Model.del);
+  let fn = utils.composeAsyncFunction(exports.getByID, MongoModelFn.del);
 
   return fn(user._id).then(async () => {
     await ImageModel.delByOwner(user);
@@ -68,7 +68,7 @@ exports.del = user => {
  * @return {Promise}
  */
 exports.getTreatedByID = _id => {
-  let fn = composeAsyncFunction(exports.getByID, Plugins.treat);
+  let fn = utils.composeAsyncFunction(exports.getByID, Plugins.treat);
   return fn(_id);
 };
 
@@ -79,8 +79,8 @@ exports.getTreatedByID = _id => {
  */
 exports.validateAndGet = userInfo => {
   let { name, password } = userInfo;
-  let checkPasswordFn = bindTrailingArgs(Plugins.checkPassword, password);
-  let fn = composeAsyncFunction(exports.getByName, checkPasswordFn, Plugins.treat);
+  let checkPasswordFn = utils.bindTrailingArgs(Plugins.checkPassword, password);
+  let fn = utils.composeAsyncFunction(exports.getByName, checkPasswordFn, Plugins.treat);
 
   return fn(name);
 };
@@ -93,9 +93,9 @@ exports.validateAndGet = userInfo => {
  * @return {Promise}
  */
 exports.validateAndUpdatePassword = (user, password, newpassword) => {
-  let checkPasswordFn = bindTrailingArgs(Plugins.checkPassword, password);
-  let updateFn = bindTrailingArgs(Model.updateOne, { password: newpassword });
-  let fn = composeAsyncFunction(exports.getByID, checkPasswordFn, updateFn);
+  let checkPasswordFn = utils.bindTrailingArgs(Plugins.checkPassword, password);
+  let updateFn = utils.bindTrailingArgs(MongoModelFn.updateOne, { password: newpassword });
+  let fn = utils.composeAsyncFunction(exports.getByID, checkPasswordFn, updateFn);
 
   return fn(user._id);
 };

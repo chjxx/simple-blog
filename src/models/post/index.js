@@ -1,9 +1,9 @@
-let { composeAsyncFunction, bindTrailingArgs } = require('../../lib/utils');
-let Model = require('./model');
+let utils = require('../../lib/utils');
+let MongoModelFn = require('./mongoModelFn');
 let Plugins = require('./plugins');
 
-exports.create = Model.create;
-exports.getTags = Model.getTags;
+exports.create = MongoModelFn.create;
+exports.getTags = MongoModelFn.getTags;
 exports.isAuthor = Plugins.isAuthor;
 
 /**
@@ -11,7 +11,7 @@ exports.isAuthor = Plugins.isAuthor;
  * @param  {Object} filter 筛选项, 可选
  * @return {Promise}
  */
-exports.countDocument = Model.countDocument;
+exports.countDocument = MongoModelFn.countDocument;
 
 /**
  * 根据命名链接或ID删除文章
@@ -19,7 +19,7 @@ exports.countDocument = Model.countDocument;
  * @return {Promise}
  */
 exports.delByNameLinkOrID = _id => {
-  let fn = composeAsyncFunction(Model.getOne, Model.del);
+  let fn = utils.composeAsyncFunction(MongoModelFn.getOne, MongoModelFn.del);
 
   return fn({ namedLink: _id })
     .catch(() => fn({ _id }));
@@ -35,9 +35,9 @@ exports.getTreatedByNamedLinkOrID = (_id, increasePv) => {
   let fn;
 
   if (increasePv) {
-    fn = composeAsyncFunction(Model.getOne, Model.increasePv, Plugins.treat);
+    fn = utils.composeAsyncFunction(MongoModelFn.getOne, MongoModelFn.increasePv, Plugins.treat);
   } else {
-    fn = composeAsyncFunction(Model.getOne, Plugins.treat);
+    fn = utils.composeAsyncFunction(MongoModelFn.getOne, Plugins.treat);
   }
 
   return fn({ namedLink: _id })
@@ -50,7 +50,7 @@ exports.getTreatedByNamedLinkOrID = (_id, increasePv) => {
  * @return {Promise}
  */
 exports.getTreatedByTags = filter => {
-  let fn = composeAsyncFunction(Model.getByTags, Plugins.treat);
+  let fn = utils.composeAsyncFunction(MongoModelFn.getByTags, Plugins.treat);
 
   return fn(filter);
 };
@@ -61,7 +61,7 @@ exports.getTreatedByTags = filter => {
  * @return {Promise}
  */
 exports.getTreatedByKey = filter => {
-  let fn = composeAsyncFunction(Model.getByKey, Plugins.treat);
+  let fn = utils.composeAsyncFunction(MongoModelFn.getByKey, Plugins.treat);
 
   return fn(filter);
 };
@@ -73,7 +73,7 @@ exports.getTreatedByKey = filter => {
  * @return {Promise}
  */
 exports.getTreated = (filter, options = {}) => {
-  let fn = composeAsyncFunction(Model.get, Plugins.treat);
+  let fn = utils.composeAsyncFunction(MongoModelFn.get, Plugins.treat);
 
   return fn(filter, options);
 };
@@ -86,8 +86,8 @@ exports.getTreated = (filter, options = {}) => {
  */
 exports.getLiteTreated = (filter, options = {}) => {
   let reservedKeys = ['_id', 'namedLink', 'title', 'created_at', 'updated_at', 'author'];
-  let treatFn = bindTrailingArgs(Plugins.treat, reservedKeys);
-  let fn = composeAsyncFunction(Model.get, treatFn);
+  let treatFn = utils.bindTrailingArgs(Plugins.treat, reservedKeys);
+  let fn = utils.composeAsyncFunction(MongoModelFn.get, treatFn);
 
   return fn(filter, options);
 };
@@ -100,9 +100,9 @@ exports.getLiteTreated = (filter, options = {}) => {
  * @return {Promise}
  */
 exports.validateAndUpdateByNamedLinkOrID = (_id, user, doc) => {
-  let isAuthorFn = bindTrailingArgs(Plugins.isAuthor, user);
-  let updateFn = bindTrailingArgs(Model.updateOne, doc);
-  let fn = composeAsyncFunction(Model.getOne, isAuthorFn, updateFn);
+  let isAuthorFn = utils.bindTrailingArgs(Plugins.isAuthor, user);
+  let updateFn = utils.bindTrailingArgs(MongoModelFn.updateOne, doc);
+  let fn = utils.composeAsyncFunction(MongoModelFn.getOne, isAuthorFn, updateFn);
 
   return fn({ namedLink: _id })
     .catch(() => fn({ _id }));
@@ -115,8 +115,8 @@ exports.validateAndUpdateByNamedLinkOrID = (_id, user, doc) => {
  * @return {Promise}
  */
 exports.validateAndDeleteByNamedLinkOrID = (_id, user) => {
-  let isAuthorFn = bindTrailingArgs(Plugins.isAuthor, user);
-  let fn = composeAsyncFunction(Model.getOne, isAuthorFn, Model.del);
+  let isAuthorFn = utils.bindTrailingArgs(Plugins.isAuthor, user);
+  let fn = utils.composeAsyncFunction(MongoModelFn.getOne, isAuthorFn, MongoModelFn.del);
 
   return fn({ namedLink: _id })
     .catch(() => fn({ _id }));
