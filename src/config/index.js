@@ -1,18 +1,11 @@
-const path = require('path');
-
 module.exports = {
   https: {
     host: '0.0.0.0',
-    port: 3000,
-    ssl: {
-      key: path.resolve('./src/lib/ssl/key.pem'),
-      cert: path.resolve('./src/lib/ssl/cert.pem'),
-      passphrase: '19616414'
-    }
+    port: 3000
   },
   http: {
     host: '0.0.0.0',
-    port: 3001
+    port: 3000
   },
   session: {
     // cookie 中保存 session id 的字段名称
