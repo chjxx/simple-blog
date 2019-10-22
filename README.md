@@ -25,7 +25,7 @@
 
 
 ## 开始
-- [布署项目环境及启动](https://github.com/chjxx/simple-blog/docs/DEPLOYMENT.md)
+- [布署项目环境及启动](https://github.com/chjxx/simple-blog/blob/master/docs/DEPLOYMENT.md)
 - [项目树](https://github.com/chjxx/simple-blog/docs/TREE.md)
 
 ## Todo
