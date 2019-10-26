@@ -46,6 +46,13 @@ let router = new Router({
         keepAlive: false,
         deepth: 0
       },
+      // 拦截路由, 检查账户登陆情况, 如果未登陆管理员账户则跳转到登陆页。
+      beforeEnter(to, from, next) {
+        api.users.getAdminAccountInfo().then(next)
+        .catch(err => {
+          next({ path: '/sign' });
+        });
+      },
       children: adminRoutes
     },
     {
@@ -55,6 +62,13 @@ let router = new Router({
       meta: {
         keepAlive: false,
         deepth: 0
+      },
+      // 拦截路由检查账户登陆情况, 如果已登陆管理员账户则跳转到后台。
+      beforeEnter(to, from, next) {
+        api.users.getAdminAccountInfo().then(account => {
+          next({ path: '/admin' });
+        })
+        .catch(next);
       }
     },
     {
