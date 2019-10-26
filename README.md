@@ -23,6 +23,11 @@
     - compression (文件传输压缩)
 - **兼容性:** 前端页面兼容**IE10**及以上
 
+## Demo
+- [前台页面](https://chjxx.github.io/simple-blog)
+- [后台页面](https://chjxx.github.io/simple-blog/#/admin)
+- [登陆/注册页面](https://chjxx.github.io/simple-blog/#/sign)
+- [404页面](https://chjxx.github.io/simple-blog/#/404)
 
 ## 开始
 - [布署项目环境及启动](https://github.com/chjxx/simple-blog/blob/master/docs/DEPLOYMENT.md)
